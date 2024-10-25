@@ -158,13 +158,95 @@ solution lag(matrix(*ff)(matrix, matrix, matrix), double a, double b, double eps
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+
+		double ai = a;
+		double bi = b;
+		double ci = (a + b) / 2;
+		double di{};
+
+		int i = 0;
+		double l{}, m{};
+		solution ai_sol, bi_sol, ci_sol, di_sol;
+		double l_prev{}, m_prev{}, di_prev{};
+		do
+		{
+			ai_sol.x = ai;
+			ai_sol.fit_fun(ff, ud1);
+
+			bi_sol.x = bi;
+			bi_sol.fit_fun(ff, ud1);
+
+			ci_sol.x = ci;
+			ci_sol.fit_fun(ff, ud1);
+
+			l = m2d(ai_sol.y) * (pow(bi, 2) - pow(ci, 2)) + m2d(bi_sol.y) * (pow(ci, 2) - pow(ai, 2)) + m2d(ci_sol.y) * (pow(ai, 2) - pow(bi, 2));
+			m = m2d(ai_sol.y) * (bi - ci) + m2d(bi_sol.y) * (ci - ai) + m2d(ci_sol.y) * (ai - bi);
+
+			if (m <= 0)
+			{
+				Xopt.flag = 0;
+				break;
+			}
+
+			di = 0.5 * l / m;
+			di_sol.x = di;
+			di_sol.fit_fun(ff, ud1);
+
+			if (ai < di && di < ci)
+			{
+				if (di_sol.y < ci_sol.y)
+				{
+					bi = ci;
+					ci = di;
+				}
+				else
+					ai = di;
+			}
+			else
+			{
+				if (ci < di && di < bi)
+				{
+					if (di_sol.y < ci_sol.y)
+					{
+						ai = ci;
+						ci = di;
+					}
+					else
+						bi = di;
+				}
+				else
+				{
+					Xopt.flag = 0;
+					break;
+				}
+			}
+
+			if (ai_sol.f_calls > Nmax)
+			{
+				Xopt.flag = 0;
+				throw std::string("Error message!");
+				break;
+			}
+
+			if (i > 0)
+			{
+				di_prev = 0.5 * l_prev / m_prev;
+			}
+
+			l_prev = l;
+			m_prev = m;
+
+			++i;
+		} while (!(bi - ai < epsilon || abs(di - di_prev) < gamma));
+
+		Xopt.x = di;
+		Xopt.fit_fun(ff, ud1);
 
 		return Xopt;
 	}
-	catch (string ex_info)
+	catch (string& ex_info)
 	{
-		throw("solution lag(...):\n" + ex_info);
+		throw ("solution lag(...):\n" + ex_info);
 	}
 }
 
