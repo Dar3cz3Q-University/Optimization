@@ -40,3 +40,54 @@ matrix lab1_fun(matrix x, matrix ud1, matrix ud2)
 	fx(0) = y;
 	return fx;
 }
+
+matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
+{
+	matrix dY(3, 1);
+
+	double Va = Y(0);
+	double Vb = Y(1);
+	double Tb = Y(2);
+
+	double Pa = ud1(0);
+	double Ta = ud1(1);
+	double Pb = ud1(2);
+	double Db = ud1(3);
+	double F_in = ud1(4);
+	double T_in = ud1(5);
+	double a = ud1(6);
+	double b = ud1(7);
+
+	double FaOut = a * b * m2d(ud2) * sqrt(2 * EARTH_ACCELERATION * (Y(0) / Pa));
+	double FbOut = a * b * Db * sqrt(2 * EARTH_ACCELERATION * (Y(1) / Pb));
+	double dTb_dt = FaOut / Vb * (Ta - Tb) + F_in / Vb * (T_in - Tb);
+
+	dY(0) = -FaOut;
+	dY(1) = FaOut + F_in - FbOut;
+	dY(2) = dTb_dt;
+
+	return dY;
+}
+
+// Tylko Lagrange i Fib
+// Do wykresu uzyc x tego ktory wyliczymy w tej funkcji
+// Do 31 pazdziernika, jedna osoba oddaje sprawko. 
+matrix f1R(matrix x, matrix ud1, matrix ud2)
+{
+	matrix y;
+	matrix y0 = matrix(3, new double[3]{ 5, 1, 20 });
+
+	matrix* y_ptr = solve_ode(df1, 0, 1, 2000, y0, ud1, x);
+
+	int n = get_len(y0);
+
+	double max = y_ptr[1](0, 2);
+
+	for (int i = 0; i < n; i++)
+		if (y_ptr[1](i, 2) > max)
+			max = y_ptr[1](i, 2);
+
+	y = abs(max - 50);
+
+	return y;
+}

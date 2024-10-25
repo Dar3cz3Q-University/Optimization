@@ -72,15 +72,37 @@ void lab1()
 	int Nmax = 10000;
 
 	//double* result = expansion(lab1_fun, -100, 1, 1.01, Nmax); //to wypluje minimum lokalne, to po lewej
-	double* result = expansion(lab1_fun, 10, 1, 1.01, Nmax); //to wypluje minimum globalne, to po prawej
+	double* result = expansion(lab1_fun, 50, 1, 1.01, Nmax); //to wypluje minimum globalne, to po prawej
 	solution::clear_calls();
 	cout << result[0] << ", " << result[1] << "\n";
-
 
 	solution resultFib = fib(lab1_fun, result[0], result[1], 0.001);
 	std::cout << resultFib << "\n";
 	solution::clear_calls();
 
+	solution resultLag = lag(lab1_fun, result[0], result[1], 1e-18, 1e-30, Nmax);
+	std::cout << resultLag << "\n";
+	solution::clear_calls();
+
+	matrix ud1(8, 1);
+	ud1(0) = 0.5; // Pa
+	ud1(1) = 90.0; // Ta
+	ud1(2) = 1.0; // Pb
+	ud1(3) = 36.5665 / 100.0 / 100.0; // Db: cm2 -> m2
+	ud1(4) = 10.0 / 1000.0; // F_in: l -> m3
+	ud1(5) = 20.0; // T_in
+	ud1(6) = 0.98; // a
+	ud1(7) = 0.63; // b
+
+	//solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
+	//std::cout << realProblem << "\n";
+	//solution::clear_calls();
+
+	matrix x(1, 1);
+	x(0) = 0.05;
+	matrix result2 = f1R(x, ud1);
+
+	std::cout << m2d(result2) << "\n";
 }
 
 void lab2() {}
