@@ -51,7 +51,7 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 		if (sx0.y == sx1.y)
 		{
 			p[0] = m2d(sx0.x);
-			p[1] = m2d(sx0.y);
+			p[1] = m2d(sx0.y); // czy to w sumie jest dobrze? imo powinno byc sx1.x zgodnie z "konwencją" nazewnictwa tego programu x^(id) to sxID.x, sx0.y byloby f(x^(0)) a jest w pseudokodzie x^(1)
 
 			return p;
 		}
@@ -110,8 +110,40 @@ solution fib(matrix(*ff)(matrix, matrix, matrix), double a, double b, double eps
 {
 	try
 	{
+
+		std::vector<int> phi = {0,1}; // two first values of fibonacci sequence
+		int k = 1;
+		while(phi[k] < (b-a)/epsilon) {
+			phi.push_back(phi[k] + phi[k-1]); // 0 +1 = 1 1 + 1 = 2 2+1 = 3 3+2
+			k++;
+		}
+		double a0 = a;
+		double b0 = b;
+		double c0 = b0 - phi[k-1] / phi[k] * (b0 - a0);
+		double d0 = a0 + b0 - c0;
+
+		solution cSol, dSol;
+		for ( int i = 0; i <= k-3; i++) {
+			cSol.x = c0;
+			cSol.fit_fun(ff);
+
+
+			dSol.x = d0;
+			dSol.fit_fun(ff);
+
+			if(cSol.y < dSol.y) {
+				b0 = d0;
+			}
+			else {
+				a0 = c0;
+			}
+			c0 = b0 - (static_cast<double>(phi[k-i-2]) / static_cast<double>(phi[k-i-1]))*(b0 - a0);
+			d0 = a0 + b0 - c0;
+		}
+
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		Xopt.x = c0;
+		Xopt.fit_fun(ff);
 
 		return Xopt;
 	}
