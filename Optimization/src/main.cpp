@@ -11,7 +11,6 @@ Data ostatniej modyfikacji: 19.09.2023
 *********************************************/
 
 #include "opt_alg.h"
-#include <fstream>
 
 #include "RandomNumberGenerator.h"
 #include "FileSaver.h"
@@ -89,14 +88,16 @@ void lab1()
 	ud1(5) = 20.0; // T_in
 	ud1(6) = 0.98; // a
 	ud1(7) = 0.63; // b
-	
+
 	solution resultFib = fib(f1R, a, b, epsilon, ud1);
 	std::cout << resultFib << "\n";
 	solution::clear_calls();
 
-	solution resultLag = lag(f1R, a, b, epsilon, gamma, Nmax, ud1);
-	std::cout << resultLag << "\n";
-	solution::clear_calls();
+	{
+		solution resultLag = lag(f1R, a, b, epsilon, gamma, Nmax, ud1);
+		std::cout << resultLag << "\n";
+		solution::clear_calls();
+	}
 
 	for (double alpha = 1.5; alpha <= 4.5; alpha += 1.5)
 	{
@@ -138,19 +139,6 @@ void lab1()
 	solution resultLag = lag(f1R, a, b, epsilon, gamma, Nmax, ud1);
 	std::cout << resultLag << "\n";
 	solution::clear_calls();
-	
-
-
-	//matrix* Y = solve_ode(df1, 0, 1, 2000, Y0, ud1, opt.x);
-
-	
-
-	////solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
-	////std::cout << realProblem << "\n";
-	////solution::clear_calls();
-
-	//matrix x(1, 1);
-	//x(0) = 0.00116768; // 50 cm^2 -> m^2
 
 	matrix matFib = f1R(resultFib.x, ud1);
 	std::cout << "Dla minimum z fibonacci, Da = " << resultFib.x << " cm^2, (max - 50) = " << m2d(matFib) << "\n";
@@ -163,22 +151,11 @@ void lab1()
 
 	matrix* simulationFib = solve_ode(df1, 0, 1, 2000, y0, ud1, resultFib.x);
 
-	fstream wynikFib;
-	wynikFib.open("../wynik_proj1_fib.txt", ios::out);
-	//cout << wynikFib.is_open() << endl;
-	//cout << simulationFib[1];
-	wynikFib << simulationFib[1];
-	wynikFib.close();
+	SAVE_TO_FILE("wynik_proj1_fib.txt") << simulationFib[1];
 	
 	matrix* simulationLag = solve_ode(df1, 0, 1, 2000, y0, ud1, resultLag.x);
 
-	fstream wynikLag;
-	wynikLag.open("../wynik_proj1_lag.txt", ios::out);
-	//cout << wynikLag.is_open() << endl;
-	//cout << simulationLag[1];
-	wynikLag << simulationLag[1];
-	wynikLag.close();
-
+	SAVE_TO_FILE("wynik_proj1_lag.txt") << simulationLag[1];
 }
 
 void lab2() {}
