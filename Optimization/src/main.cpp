@@ -1,3 +1,5 @@
+#include "pch.h"
+
 /*********************************************
 Kod stanowi uzupe�nienie materia��w do �wicze�
 w ramach przedmiotu metody optymalizacji.
@@ -10,9 +12,8 @@ Data ostatniej modyfikacji: 19.09.2023
 
 #include "opt_alg.h"
 
-#include <ctime>
-#include <bits/fs_fwd.h>
-#include <bits/fs_path.h>
+#include "RandomNumberGenerator.h"
+#include "FileSaver.h"
 
 void lab0();
 void lab1();
@@ -24,7 +25,6 @@ void lab6();
 
 int main()
 {
-	srand(time(NULL));
 	try
 	{
 		lab1();
@@ -88,8 +88,6 @@ void lab1()
 	ud1(5) = 20.0; // T_in
 	ud1(6) = 0.98; // a
 	ud1(7) = 0.63; // b
-
-	// Ekspansje
 	
 	solution resultFib = fib(f1R, a, b, epsilon, ud1);
 	std::cout << resultFib << "\n";
@@ -98,20 +96,49 @@ void lab1()
 	solution resultLag = lag(f1R, a, b, epsilon, gamma, Nmax, ud1);
 	std::cout << resultLag << "\n";
 	solution::clear_calls();
-	
-	//matrix* Y = solve_ode(df1, 0, 1, 2000, Y0, ud1, opt.x);
 
-	
+	for (double alpha = 1.5; alpha <= 4.5; alpha += 1.5)
+	{
+		for (int i = 0; i < 100; i++)
+		{
+			// Expansion
+			double x0 = RandomNumberGenerator::Get().Double(0, 100);
+			double* expansionResult = expansion(lab1_fun, x0, 1, alpha, Nmax);
 
-	////solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
-	////std::cout << realProblem << "\n";
-	////solution::clear_calls();
+			SAVE_TO_FILE("expansion-" + std::to_string(alpha) + ".txt") << x0 << expansionResult[0] << expansionResult[1] << solution::f_calls;
 
-	//matrix x(1, 1);
-	//x(0) = 50.0 / 10000.0; // 50 cm^2 -> m^2
-	//matrix result2 = f1R(x, ud1);
+			solution::clear_calls();
 
-	//std::cout << "Dla Da = 50 cm^2, (max - 50) = " << m2d(result2) << "\n";
+			// Fibonacci
+			solution fibonacciResult = fib(lab1_fun, expansionResult[0], expansionResult[1], epsilon, Nmax);
+
+			SAVE_TO_FILE("fibonacci-" + std::to_string(alpha) + ".txt") << fibonacciResult.x << fibonacciResult.y << solution::f_calls;
+
+			solution::clear_calls();
+
+			// Lagrange
+			solution lagrangeResult = lag(lab1_fun, expansionResult[0], expansionResult[1], epsilon, gamma, Nmax);
+
+			SAVE_TO_FILE("lagrange-" + std::to_string(alpha) + ".txt") << lagrangeResult.x << lagrangeResult.y << solution::f_calls;
+
+			solution::clear_calls();
+
+			delete[] expansionResult;
+		}
+	}
+
+	solution fibonacciResult = fib(lab1_fun, -100, 100, epsilon, Nmax);
+	solution lagrangeResult = lag(lab1_fun, -100, 100, epsilon, gamma, Nmax);
+
+	solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
+	std::cout << realProblem << "\n";
+	solution::clear_calls();
+
+	matrix x(1, 1);
+	x(0) = 50.0 / 10000.0; // 50 cm^2 -> m^2
+	matrix result2 = f1R(x, ud1);
+
+	std::cout << "Dla Da = 50 cm^2, (max - 50) = " << m2d(result2) << "\n";
 }
 
 void lab2() {}

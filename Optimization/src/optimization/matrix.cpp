@@ -1,3 +1,5 @@
+#include "pch.h"
+
 /*********************************************
 Kod stanowi uzupe�nienie materia��w do �wicze�
 w ramach przedmiotu metody optymalizacji.

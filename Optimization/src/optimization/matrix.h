@@ -12,12 +12,6 @@ Data ostatniej modyfikacji: 19.09.2023
 
 #pragma once
 
-#include <chrono>
-#include <fstream>
-#include <iostream>
-#include <random>
-#include <sstream>
-#include <string>
 using namespace std;
 
 #define SEP_SYMBOL ','
