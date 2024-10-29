@@ -99,45 +99,54 @@ double *expansion(matrix (*ff)(matrix, matrix, matrix), double x0, double d, dou
     }
 }
 
-solution fib(matrix (*ff)(matrix, matrix, matrix), double a, double b, double epsilon, matrix ud1, matrix ud2) {
-    try {
+solution fib(matrix(*ff)(matrix, matrix, matrix), double a, double b, double epsilon, matrix ud1, matrix ud2)
+{
+	try
+	{
+		std::vector<double> sigma = { 1, 1 };
+		double ratio = (b - a) / epsilon;
+		while (true)
+		{
+			if (sigma.back() > ratio)
+				break;
 
-        std::vector<int> phi = {0, 1}; // two first values of fibonacci sequence
-        int k = 1;
-        while (phi[k] < (b - a) / epsilon) {
-            phi.push_back(phi[k] + phi[k - 1]); // 0 +1 = 1 1 + 1 = 2 2+1 = 3 3+2
-            k++;
-        }
-        double a0 = a;
-        double b0 = b;
-        double c0 = b0 - phi[k - 1] / phi[k] * (b0 - a0);
-        double d0 = a0 + b0 - c0;
+			sigma.push_back(sigma[sigma.size() - 1] + sigma[sigma.size() - 2]);
+		}
+		int k = sigma.size() - 1;
 
-        solution cSol, dSol;
-        for (int i = 0; i <= k - 3; i++) {
-            cSol.x = c0;
-            cSol.fit_fun(ff);
+		double a0 = a;
+		double b0 = b;
+		double c0 = b0 - sigma[k - 1] / sigma[k] * (b0 - a0);
+		double d0 = a0 + b0 - c0;
 
-            dSol.x = d0;
-            dSol.fit_fun(ff);
+		solution c_sol, d_sol;
+		for (int i = 0; i <= k - 3; ++i)
+		{
+			c_sol.x = c0;
+			c_sol.fit_fun(ff, ud1, ud2);
 
-            if (cSol.y < dSol.y) {
-                b0 = d0;
-            } else {
-                a0 = c0;
-            }
-            c0 = b0 - (static_cast<double>(phi[k - i - 2]) / static_cast<double>(phi[k - i - 1])) * (b0 - a0);
-            d0 = a0 + b0 - c0;
-        }
+			d_sol.x = d0;
+			d_sol.fit_fun(ff, ud1, ud2);
 
-        solution Xopt;
-        Xopt.x = c0;
-        Xopt.fit_fun(ff);
+			if (c_sol.y < d_sol.y)
+				b0 = d0;
+			else
+				a0 = c0;
 
-        return Xopt;
-    } catch (string ex_info) {
-        throw("solution fib(...):\n" + ex_info);
-    }
+			c0 = b0 - sigma[k - i - 2] / sigma[k - i - 1] * (b0 - a0);
+			d0 = a0 + b0 - c0;
+		}
+
+		solution Xopt;
+		Xopt.x = c0;
+		Xopt.fit_fun(ff, ud1, ud2);
+
+		return Xopt;
+	}
+	catch (string ex_info)
+	{
+		throw ("solution fib(...):\n" + ex_info);
+	}
 }
 
 solution lag(matrix (*ff)(matrix, matrix, matrix), double a, double b, double epsilon, double gamma, int Nmax, matrix ud1, matrix ud2) {
@@ -149,19 +158,20 @@ solution lag(matrix (*ff)(matrix, matrix, matrix), double a, double b, double ep
         double ci = (a + b) / 2;
         double di{};
 
-        int i = 0;
-        double l{}, m{};
-        solution ai_sol, bi_sol, ci_sol, di_sol;
-        double l_prev{}, m_prev{}, di_prev{};
-        do {
-            ai_sol.x = ai;
-            ai_sol.fit_fun(ff, ud1);
+		int i = 0;
+		double l{}, m{};
+		solution ai_sol, bi_sol, ci_sol, di_sol;
+		double l_prev{}, m_prev{}, di_prev{};
+		do
+		{
+			ai_sol.x = ai;
+			ai_sol.fit_fun(ff, ud1, ud2);
 
-            bi_sol.x = bi;
-            bi_sol.fit_fun(ff, ud1);
+			bi_sol.x = bi;
+			bi_sol.fit_fun(ff, ud1, ud2);
 
-            ci_sol.x = ci;
-            ci_sol.fit_fun(ff, ud1);
+			ci_sol.x = ci;
+			ci_sol.fit_fun(ff, ud1, ud2);
 
             l = m2d(ai_sol.y) * (pow(bi, 2) - pow(ci, 2)) + m2d(bi_sol.y) * (pow(ci, 2) - pow(ai, 2)) + m2d(ci_sol.y) * (pow(ai, 2) - pow(bi, 2));
             m = m2d(ai_sol.y) * (bi - ci) + m2d(bi_sol.y) * (ci - ai) + m2d(ci_sol.y) * (ai - bi);
@@ -171,9 +181,9 @@ solution lag(matrix (*ff)(matrix, matrix, matrix), double a, double b, double ep
                 break;
             }
 
-            di = 0.5 * l / m;
-            di_sol.x = di;
-            di_sol.fit_fun(ff, ud1);
+			di = 0.5 * l / m;
+			di_sol.x = di;
+			di_sol.fit_fun(ff, ud1, ud2);
 
             if (ai < di && di < ci) {
                 if (di_sol.y < ci_sol.y) {
@@ -210,8 +220,8 @@ solution lag(matrix (*ff)(matrix, matrix, matrix), double a, double b, double ep
             ++i;
         } while (!(bi - ai < epsilon || abs(di - di_prev) < gamma));
 
-        Xopt.x = di;
-        Xopt.fit_fun(ff, ud1);
+		Xopt.x = di;
+		Xopt.fit_fun(ff, ud1, ud2);
 
         return Xopt;
     } catch (string &ex_info) {
