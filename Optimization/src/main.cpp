@@ -10,6 +10,10 @@ Data ostatniej modyfikacji: 19.09.2023
 
 #include "opt_alg.h"
 
+#include <ctime>
+#include <bits/fs_fwd.h>
+#include <bits/fs_path.h>
+
 void lab0();
 void lab1();
 void lab2();
@@ -20,6 +24,7 @@ void lab6();
 
 int main()
 {
+	srand(time(NULL));
 	try
 	{
 		lab1();
@@ -68,18 +73,61 @@ void lab0()
 
 void lab1() 
 {
-	double epsilon = 1e-2;
+	double epsilon = 1e-3;
 	int Nmax = 10000;
 
 	//double* result = expansion(lab1_fun, -100, 1, 1.01, Nmax); //to wypluje minimum lokalne, to po lewej
-	double* result = expansion(lab1_fun, 10, 1, 1.01, Nmax); //to wypluje minimum globalne, to po prawej
+
+	// 1. aplha = 1;
+	// 2. aplha = 3.5;
+	// 3. alpha = 10;
+	// a) with expansion b) without
+	double alpha = 1.5;
+	std::stringstream ss;
+	std::fstream outFile;
+	// 1 of 3 iterations, add later for(i < 3)
+	for(int exp = 0; exp < 3; exp++) {
+		for(int iter = 0; iter < 100; iter++) {
+
+			int start = rand()%100;
+			double* result = expansion(lab1_fun, start, 1, alpha, Nmax );
+			solution::clear_calls();
+			ss << std::setw(15);
+			ss << start << ";\t" << result[0] << ";\t"<<result[1] << ";\t" << solution::f_calls << ";\t";
+			solution::clear_calls();
+
+			solution resultFib = fib(lab1_fun, result[0], result[1], epsilon);
+
+			ss << m2d(resultFib.x) << ";\t" << m2d(resultFib.y) << ";\t" << solution::f_calls << ";\t" << (resultFib.x > -1 && resultFib.x < 1 ? "lokalne" : "globalne") << ";\t\n";
+
+
+			// std::cout << resultFib << "\n";
+			solution::clear_calls();
+			alpha += 1.5;
+		}
+
+		//not working
+		filesystem::__cxx11::path currentPath = std::filesystem::current_path();
+		std::cout << "Current working directory: " << currentPath << std::endl;
+		outFile.open("../../../Results/test_alpha_" + std::to_string(alpha)+".csv");
+		if(outFile.is_open()) {
+			outFile << ss.str();
+		}else {
+			std::cerr << "ERROR:\n";
+		}
+		outFile.close();
+		ss.str("");
+	}
+
+	double* result = expansion(lab1_fun, 50, 1, 1.01, Nmax); //to wypluje minimum globalne, to po prawej
 	solution::clear_calls();
+
 	cout << result[0] << ", " << result[1] << "\n";
 
 
-	solution resultFib = fib(lab1_fun, result[0], result[1], 0.001);
-	std::cout << resultFib << "\n";
-	solution::clear_calls();
+	// solution resultFib = fib(lab1_fun, result[0], result[1], 0.001);
+	// std::cout << resultFib << "\n";
+	// solution::clear_calls();
 
 }
 
