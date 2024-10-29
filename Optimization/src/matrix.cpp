@@ -90,7 +90,7 @@ matrix matrix::operator[](int nv) const {
     return A;
 }
 
-double &matrix::operator()(int nv, int mv) {
+double& matrix::operator()(int nv, int mv) {
     if (nv >= n || mv >= m || nv < 0 || mv < 0)
         throw string("double& matrix::operator()(int,int):\nindeks jest poza zakresem");
     return M[nv][mv];

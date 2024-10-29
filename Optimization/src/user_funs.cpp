@@ -46,8 +46,8 @@ matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
 	matrix dY(3, 1);
 
 	double Va = Y(0);
-	double Vb = Y(1); //nan
-	double Tb = Y(2); //nan
+	double Vb = Y(1);
+	double Tb = Y(2);
 
 	double Pa = ud1(0);
 	double Ta = ud1(1);
@@ -57,28 +57,9 @@ matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
 	double T_in = ud1(5);
 	double a = ud1(6);
 	double b = ud1(7);
-	/*
-	cout << "Y(0) " << Y(0) << endl;
-	cout << "Y(1) " << Y(1) << endl;
-	//cout << "Y(2) " << Y(2) << endl;
 
-	//cout << "Va " << Va << endl;
-	//cout << "Vb " << Vb << endl;
-	//cout << "Tb " << Tb << endl;
-
-	
-	cout << "Pa " << Pa << endl;
-	cout << "Ta " << Ta << endl;
-	cout << "Pb " << Pb << endl;
-	cout << "Db " << Db << endl;
-	cout << "F_in " << F_in << endl;
-	cout << "T_in " << T_in << endl;
-	cout << "a " << a << endl;
-	cout << "b " << b << endl;
-	*/
-
-	double FaOut = a * b * m2d(ud2) * sqrt(2 * EARTH_ACCELERATION * (Y(0) / Pa));
-	double FbOut = a * b * Db * sqrt(2 * EARTH_ACCELERATION * (Y(1) / Pb));
+	double FaOut = a * b * m2d(ud2) * sqrt(2 * EARTH_ACCELERATION * (Va / Pa));
+	double FbOut = a * b * Db * sqrt(2 * EARTH_ACCELERATION * (Vb / Pb));
 	double dTb_dt = FaOut / Vb * (Ta - Tb) + F_in / Vb * (T_in - Tb);
 
 	dY(0) = -FaOut;
@@ -93,7 +74,7 @@ matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
 // Do 31 pazdziernika, jedna osoba oddaje sprawko. 
 matrix f1R(matrix x, matrix ud1, matrix ud2)
 {
-	matrix y;
+	matrix y(1,1);
 	matrix y0 = matrix(3, new double[3]{ 5, 1, 20 });
 
 	matrix* y_ptr = solve_ode(df1, 0, 1, 2000, y0, ud1, x);
@@ -106,9 +87,12 @@ matrix f1R(matrix x, matrix ud1, matrix ud2)
 		if (y_ptr[1](i, 2) > max)
 			max = y_ptr[1](i, 2);
 
-	cout << "Max = " << max << endl;
+	cout << std::setprecision(20) << "Max = " << max << endl;
 
-	y = abs(max - 50);
+	y(0) = abs(max - 50.0);
+
+	y_ptr[0].~matrix();
+	y_ptr[1].~matrix();
 
 	return y;
 }
