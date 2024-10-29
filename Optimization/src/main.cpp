@@ -73,62 +73,45 @@ void lab0()
 
 void lab1() 
 {
-	double epsilon = 1e-3;
+	double epsilon = 1e-20;
+	double gamma = 1e-30;
 	int Nmax = 10000;
+	double a = 1.0 * 0.01 * 0.01; // 1 cm2 = 0.0001 m2
+	double b = 100.0 * 0.01 * 0.01; // 100 cm2 = 0.01 m2
 
-	//double* result = expansion(lab1_fun, -100, 1, 1.01, Nmax); //to wypluje minimum lokalne, to po lewej
+	matrix ud1(8, 1);
+	ud1(0) = 0.5; // Pa
+	ud1(1) = 90.0; // Ta
+	ud1(2) = 1.0; // Pb
+	ud1(3) = 36.5665 * 0.0001; // Db: cm2 -> m2
+	ud1(4) = 10.0 * 0.001; // F_in: l -> m3
+	ud1(5) = 20.0; // T_in
+	ud1(6) = 0.98; // a
+	ud1(7) = 0.63; // b
 
-	// 1. aplha = 1;
-	// 2. aplha = 3.5;
-	// 3. alpha = 10;
-	// a) with expansion b) without
-	double alpha = 1.5;
-	std::stringstream ss;
-	std::fstream outFile;
-	// 1 of 3 iterations, add later for(i < 3)
-	for(int exp = 0; exp < 3; exp++) {
-		for(int iter = 0; iter < 100; iter++) {
-
-			int start = rand()%100;
-			double* result = expansion(lab1_fun, start, 1, alpha, Nmax );
-			solution::clear_calls();
-			ss << std::setw(15);
-			ss << start << ";\t" << result[0] << ";\t"<<result[1] << ";\t" << solution::f_calls << ";\t";
-			solution::clear_calls();
-
-			solution resultFib = fib(lab1_fun, result[0], result[1], epsilon);
-
-			ss << m2d(resultFib.x) << ";\t" << m2d(resultFib.y) << ";\t" << solution::f_calls << ";\t" << (resultFib.x > -1 && resultFib.x < 1 ? "lokalne" : "globalne") << ";\t\n";
-
-
-			// std::cout << resultFib << "\n";
-			solution::clear_calls();
-			alpha += 1.5;
-		}
-
-		//not working
-		filesystem::__cxx11::path currentPath = std::filesystem::current_path();
-		std::cout << "Current working directory: " << currentPath << std::endl;
-		outFile.open("../../../Results/test_alpha_" + std::to_string(alpha)+".csv");
-		if(outFile.is_open()) {
-			outFile << ss.str();
-		}else {
-			std::cerr << "ERROR:\n";
-		}
-		outFile.close();
-		ss.str("");
-	}
-
-	double* result = expansion(lab1_fun, 50, 1, 1.01, Nmax); //to wypluje minimum globalne, to po prawej
+	// Ekspansje
+	
+	solution resultFib = fib(f1R, a, b, epsilon, ud1);
+	std::cout << resultFib << "\n";
 	solution::clear_calls();
 
-	cout << result[0] << ", " << result[1] << "\n";
+	solution resultLag = lag(f1R, a, b, epsilon, gamma, Nmax, ud1);
+	std::cout << resultLag << "\n";
+	solution::clear_calls();
+	
+	//matrix* Y = solve_ode(df1, 0, 1, 2000, Y0, ud1, opt.x);
 
+	
 
-	// solution resultFib = fib(lab1_fun, result[0], result[1], 0.001);
-	// std::cout << resultFib << "\n";
-	// solution::clear_calls();
+	////solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
+	////std::cout << realProblem << "\n";
+	////solution::clear_calls();
 
+	//matrix x(1, 1);
+	//x(0) = 50.0 / 10000.0; // 50 cm^2 -> m^2
+	//matrix result2 = f1R(x, ud1);
+
+	//std::cout << "Dla Da = 50 cm^2, (max - 50) = " << m2d(result2) << "\n";
 }
 
 void lab2() {}
