@@ -46,8 +46,8 @@ matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
 	matrix dY(3, 1);
 
 	double Va = Y(0);
-	double Vb = Y(1);
-	double Tb = Y(2);
+	double Vb = Y(1); //nan
+	double Tb = Y(2); //nan
 
 	double Pa = ud1(0);
 	double Ta = ud1(1);
@@ -57,6 +57,25 @@ matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
 	double T_in = ud1(5);
 	double a = ud1(6);
 	double b = ud1(7);
+	/*
+	cout << "Y(0) " << Y(0) << endl;
+	cout << "Y(1) " << Y(1) << endl;
+	//cout << "Y(2) " << Y(2) << endl;
+
+	//cout << "Va " << Va << endl;
+	//cout << "Vb " << Vb << endl;
+	//cout << "Tb " << Tb << endl;
+
+	
+	cout << "Pa " << Pa << endl;
+	cout << "Ta " << Ta << endl;
+	cout << "Pb " << Pb << endl;
+	cout << "Db " << Db << endl;
+	cout << "F_in " << F_in << endl;
+	cout << "T_in " << T_in << endl;
+	cout << "a " << a << endl;
+	cout << "b " << b << endl;
+	*/
 
 	double FaOut = a * b * m2d(ud2) * sqrt(2 * EARTH_ACCELERATION * (Y(0) / Pa));
 	double FbOut = a * b * Db * sqrt(2 * EARTH_ACCELERATION * (Y(1) / Pb));
@@ -79,13 +98,15 @@ matrix f1R(matrix x, matrix ud1, matrix ud2)
 
 	matrix* y_ptr = solve_ode(df1, 0, 1, 2000, y0, ud1, x);
 
-	int n = get_len(y0);
+	int n = get_len(y_ptr[0]);
 
 	double max = y_ptr[1](0, 2);
 
 	for (int i = 0; i < n; i++)
 		if (y_ptr[1](i, 2) > max)
 			max = y_ptr[1](i, 2);
+
+	cout << "Max = " << max << endl;
 
 	y = abs(max - 50);
 
