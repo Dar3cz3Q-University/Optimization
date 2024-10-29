@@ -1,3 +1,5 @@
+#include "pch.h"
+
 /*********************************************
 Kod stanowi uzupe�nienie materia��w do �wicze�
 w ramach przedmiotu metody optymalizacji.
@@ -9,8 +11,9 @@ Data ostatniej modyfikacji: 19.09.2023
 *********************************************/
 
 #include "opt_alg.h"
-
 #include "solution.h"
+
+#include "FileSaver.h"
 
 solution MC(matrix (*ff)(matrix, matrix, matrix), int N, matrix lb, matrix ub, double epsilon, int Nmax, matrix ud1, matrix ud2) {
     try {
@@ -122,6 +125,8 @@ solution fib(matrix(*ff)(matrix, matrix, matrix), double a, double b, double eps
 		solution c_sol, d_sol;
 		for (int i = 0; i <= k - 3; ++i)
 		{
+            SAVE_TO_FILE("fib-b-a.txt") << b0 - a0;
+
 			c_sol.x = c0;
 			c_sol.fit_fun(ff, ud1, ud2);
 
@@ -164,6 +169,8 @@ solution lag(matrix (*ff)(matrix, matrix, matrix), double a, double b, double ep
 		double l_prev{}, m_prev{}, di_prev{};
 		do
 		{
+            SAVE_TO_FILE("lag-b-a.txt") << bi - ai;
+
 			ai_sol.x = ai;
 			ai_sol.fit_fun(ff, ud1, ud2);
 

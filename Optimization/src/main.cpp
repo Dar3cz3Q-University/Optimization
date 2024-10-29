@@ -1,3 +1,5 @@
+#include "pch.h"
+
 /*********************************************
 Kod stanowi uzupe�nienie materia��w do �wicze�
 w ramach przedmiotu metody optymalizacji.
@@ -9,7 +11,9 @@ Data ostatniej modyfikacji: 19.09.2023
 *********************************************/
 
 #include "opt_alg.h"
-#include <fstream>
+
+#include "RandomNumberGenerator.h"
+#include "FileSaver.h"
 
 void lab0();
 void lab1();
@@ -85,30 +89,56 @@ void lab1()
 	ud1(6) = 0.98; // a
 	ud1(7) = 0.63; // b
 
-	// Ekspansje
-	
-	
-
 	solution resultFib = fib(f1R, a, b, epsilon, ud1);
 	std::cout << resultFib << "\n";
+	solution::clear_calls();
+
+	{
+		solution resultLag = lag(f1R, a, b, epsilon, gamma, Nmax, ud1);
+		std::cout << resultLag << "\n";
+		solution::clear_calls();
+	}
+
+	for (double alpha = 1.5; alpha <= 4.5; alpha += 1.5)
+	{
+		for (int i = 0; i < 100; i++)
+		{
+			// Expansion
+			double x0 = RandomNumberGenerator::Get().Double(0, 100);
+			double* expansionResult = expansion(lab1_fun, x0, 1, alpha, Nmax);
+
+			SAVE_TO_FILE("expansion-" + std::to_string(alpha) + ".txt") << x0 << expansionResult[0] << expansionResult[1] << solution::f_calls;
+
+			solution::clear_calls();
+
+			// Fibonacci
+			solution fibonacciResult = fib(lab1_fun, expansionResult[0], expansionResult[1], epsilon, Nmax);
+
+			SAVE_TO_FILE("fibonacci-" + std::to_string(alpha) + ".txt") << fibonacciResult.x << fibonacciResult.y << solution::f_calls;
+
+			solution::clear_calls();
+
+			// Lagrange
+			solution lagrangeResult = lag(lab1_fun, expansionResult[0], expansionResult[1], epsilon, gamma, Nmax);
+
+			SAVE_TO_FILE("lagrange-" + std::to_string(alpha) + ".txt") << lagrangeResult.x << lagrangeResult.y << solution::f_calls;
+
+			solution::clear_calls();
+
+			delete[] expansionResult;
+		}
+	}
+
+	solution fibonacciResult = fib(lab1_fun, -100, 100, epsilon, Nmax);
+	solution lagrangeResult = lag(lab1_fun, -100, 100, epsilon, gamma, Nmax);
+
+	solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
+	std::cout << realProblem << "\n";
 	solution::clear_calls();
 
 	solution resultLag = lag(f1R, a, b, epsilon, gamma, Nmax, ud1);
 	std::cout << resultLag << "\n";
 	solution::clear_calls();
-	
-
-
-	//matrix* Y = solve_ode(df1, 0, 1, 2000, Y0, ud1, opt.x);
-
-	
-
-	////solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
-	////std::cout << realProblem << "\n";
-	////solution::clear_calls();
-
-	//matrix x(1, 1);
-	//x(0) = 0.00116768; // 50 cm^2 -> m^2
 
 	matrix matFib = f1R(resultFib.x, ud1);
 	std::cout << "Dla minimum z fibonacci, Da = " << resultFib.x << " cm^2, (max - 50) = " << m2d(matFib) << "\n";
@@ -121,22 +151,11 @@ void lab1()
 
 	matrix* simulationFib = solve_ode(df1, 0, 1, 2000, y0, ud1, resultFib.x);
 
-	fstream wynikFib;
-	wynikFib.open("../wynik_proj1_fib.txt", ios::out);
-	//cout << wynikFib.is_open() << endl;
-	//cout << simulationFib[1];
-	wynikFib << simulationFib[1];
-	wynikFib.close();
+	SAVE_TO_FILE("wynik_proj1_fib.txt") << simulationFib[1];
 	
 	matrix* simulationLag = solve_ode(df1, 0, 1, 2000, y0, ud1, resultLag.x);
 
-	fstream wynikLag;
-	wynikLag.open("../wynik_proj1_lag.txt", ios::out);
-	//cout << wynikLag.is_open() << endl;
-	//cout << simulationLag[1];
-	wynikLag << simulationLag[1];
-	wynikLag.close();
-
+	SAVE_TO_FILE("wynik_proj1_lag.txt") << simulationLag[1];
 }
 
 void lab2() {}

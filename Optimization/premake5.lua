@@ -8,7 +8,16 @@ project "Optimization"
 
    flags { "MultiProcessorCompile" }
 
+   pchheader "pch.h"
+   pchsource "src/pch.cpp"
+
    files { "src/**.h", "src/**.cpp" }
+
+   includedirs {
+       "src",
+       "src/optimization",
+       "src/utils"
+   }
 
    filter "system:windows"
        systemversion "latest"
