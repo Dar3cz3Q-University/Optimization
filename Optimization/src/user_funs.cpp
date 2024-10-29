@@ -58,13 +58,47 @@ matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
 	double a = ud1(6);
 	double b = ud1(7);
 
-	double FaOut = a * b * m2d(ud2) * sqrt(2 * EARTH_ACCELERATION * (Va / Pa));
-	double FbOut = a * b * Db * sqrt(2 * EARTH_ACCELERATION * (Vb / Pb));
+	double FaOut = 0;
+	double FbOut = 0;
+
+	if (Va > 0)
+	{
+		FaOut = a * b * m2d(ud2) * sqrt(2 * EARTH_ACCELERATION * (Va / Pa));
+	}
+		
+	if (Vb > 0)
+	{
+		FbOut = a * b * Db * sqrt(2 * EARTH_ACCELERATION * (Vb / Pb));
+	}
+
 	double dTb_dt = FaOut / Vb * (Ta - Tb) + F_in / Vb * (T_in - Tb);
 
-	dY(0) = -FaOut;
-	dY(1) = FaOut + F_in - FbOut;
-	dY(2) = dTb_dt;
+	if ((Va + FaOut) >= 0)
+	{
+		dY(0) = -FaOut;
+	}
+	else
+	{
+		dY(0) = -Va;
+	}
+
+	if ((Vb + FbOut) >= 0)
+	{
+		dY(1) = FaOut + F_in - FbOut;
+	}
+	else
+	{
+		dY(1) = -Vb;
+	}
+	
+	if (Vb > 0)
+	{
+		dY(2) = dTb_dt;
+	}
+	else
+	{
+		dY(2) = 0;
+	}
 
 	return dY;
 }
@@ -87,7 +121,7 @@ matrix f1R(matrix x, matrix ud1, matrix ud2)
 		if (y_ptr[1](i, 2) > max)
 			max = y_ptr[1](i, 2);
 
-	cout << std::setprecision(20) << "Max = " << max << endl;
+	//cout << std::setprecision(20) << "Max = " << max << endl;
 
 	y(0) = abs(max - 50.0);
 

@@ -9,6 +9,7 @@ Data ostatniej modyfikacji: 19.09.2023
 *********************************************/
 
 #include "opt_alg.h"
+#include <fstream>
 
 void lab0();
 void lab1();
@@ -86,6 +87,8 @@ void lab1()
 
 	// Ekspansje
 	
+	
+
 	solution resultFib = fib(f1R, a, b, epsilon, ud1);
 	std::cout << resultFib << "\n";
 	solution::clear_calls();
@@ -94,6 +97,8 @@ void lab1()
 	std::cout << resultLag << "\n";
 	solution::clear_calls();
 	
+
+
 	//matrix* Y = solve_ode(df1, 0, 1, 2000, Y0, ud1, opt.x);
 
 	
@@ -103,10 +108,35 @@ void lab1()
 	////solution::clear_calls();
 
 	//matrix x(1, 1);
-	//x(0) = 50.0 / 10000.0; // 50 cm^2 -> m^2
-	//matrix result2 = f1R(x, ud1);
+	//x(0) = 0.00116768; // 50 cm^2 -> m^2
 
-	//std::cout << "Dla Da = 50 cm^2, (max - 50) = " << m2d(result2) << "\n";
+	matrix matFib = f1R(resultFib.x, ud1);
+	std::cout << "Dla minimum z fibonacci, Da = " << resultFib.x << " cm^2, (max - 50) = " << m2d(matFib) << "\n";
+
+	matrix matLag = f1R(resultLag.x, ud1);
+	std::cout << "Dla minimum z lagrange, Da = " << resultLag.x << " cm^2, (max - 50) = " << m2d(matLag) << "\n";
+
+	matrix y(1, 1);
+	matrix y0 = matrix(3, new double[3] { 5.0, 1.0, 20.0 });
+
+	matrix* simulationFib = solve_ode(df1, 0, 1, 2000, y0, ud1, resultFib.x);
+
+	fstream wynikFib;
+	wynikFib.open("../wynik_proj1_fib.txt", ios::out);
+	//cout << wynikFib.is_open() << endl;
+	//cout << simulationFib[1];
+	wynikFib << simulationFib[1];
+	wynikFib.close();
+	
+	matrix* simulationLag = solve_ode(df1, 0, 1, 2000, y0, ud1, resultLag.x);
+
+	fstream wynikLag;
+	wynikLag.open("../wynik_proj1_lag.txt", ios::out);
+	//cout << wynikLag.is_open() << endl;
+	//cout << simulationLag[1];
+	wynikLag << simulationLag[1];
+	wynikLag.close();
+
 }
 
 void lab2() {}
