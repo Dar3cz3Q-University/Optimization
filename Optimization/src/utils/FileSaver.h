@@ -15,7 +15,8 @@ public:
 		m_Ofstream = std::ofstream(s_Folder / filename, std::ios::app);
 	}
 
-	~FileSaver() { 
+	~FileSaver()
+	{
 		m_Ofstream << "\n";
 		m_Ofstream.close();
 	}
