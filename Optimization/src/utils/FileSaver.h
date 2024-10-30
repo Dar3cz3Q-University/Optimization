@@ -1,5 +1,7 @@
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #define SAVE_TO_FILE(filename) FileSaver(filename)
 
 auto constexpr PRECISION = 5;
@@ -33,11 +35,12 @@ private:
 
 		std::filesystem::path workingDir = std::filesystem::current_path();
 
-		auto currentTime = std::time(nullptr);
-		auto localTime = *std::localtime(&currentTime);
+		std::time_t time = std::time(nullptr);
+		struct tm result;
+		localtime_s(&result, &time);
 
 		std::ostringstream newFolderName;
-		newFolderName << std::put_time(&localTime, "%Y-%m-%d_%H-%M-%S");
+		newFolderName << std::put_time(&result, "%Y-%m-%d_%H-%M-%S");
 
 		s_Folder = workingDir / RESULTS_FOLDER_PATH / newFolderName.str();
 

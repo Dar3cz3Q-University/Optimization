@@ -1,16 +1,7 @@
-#include "pch.h"
-
-/*********************************************
-Kod stanowi uzupe�nienie materia��w do �wicze�
-w ramach przedmiotu metody optymalizacji.
-Kod udost�pniony na licencji CC BY-SA 3.0
-Autor: dr in�. �ukasz Sztangret
-Katedra Informatyki Stosowanej i Modelowania
-Akademia G�rniczo-Hutnicza
-Data ostatniej modyfikacji: 19.09.2023
-*********************************************/
-
+// Univeristy File
 // Ten plik nie powinien by� edytowany
+
+#include "pch.h"
 
 #include "matrix.h"
 
@@ -334,7 +325,7 @@ matrix rand_mat(int nv, int mv) {
 matrix randn_mat(int nv, int mv) {
     try {
         matrix A(nv, mv);
-        random_device rd;
+        //random_device rd;
         default_random_engine gen;
         gen.seed(static_cast<unsigned int>(chrono::system_clock::now().time_since_epoch().count()));
         normal_distribution<double> distr(0.0, 1.0);

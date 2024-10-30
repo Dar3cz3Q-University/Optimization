@@ -1,14 +1,6 @@
-#include "pch.h"
+// Univeristy File
 
-/*********************************************
-Kod stanowi uzupe�nienie materia��w do �wicze�
-w ramach przedmiotu metody optymalizacji.
-Kod udost�pniony na licencji CC BY-SA 3.0
-Autor: dr in�. �ukasz Sztangret
-Katedra Informatyki Stosowanej i Modelowania
-Akademia G�rniczo-Hutnicza
-Data ostatniej modyfikacji: 19.09.2023
-*********************************************/
+#include "pch.h"
 
 #include "opt_alg.h"
 #include "solution.h"
@@ -115,7 +107,7 @@ solution fib(matrix(*ff)(matrix, matrix, matrix), double a, double b, double eps
 
 			sigma.push_back(sigma[sigma.size() - 1] + sigma[sigma.size() - 2]);
 		}
-		int k = sigma.size() - 1;
+		int k = static_cast<int>(sigma.size() - 1);
 
 		double a0 = a;
 		double b0 = b;
