@@ -71,7 +71,7 @@ void lab0()
 	Y[1].~matrix();
 }
 
-void lab1() 
+void lab1()
 {
 	double epsilon = 1e-20;
 	double gamma = 1e-30;
@@ -130,7 +130,12 @@ void lab1()
 	}
 
 	solution fibonacciResult = fib(lab1_fun, -100, 100, epsilon, Nmax);
+	std::cout << fibonacciResult << "\n";
+	solution::clear_calls();
+
 	solution lagrangeResult = lag(lab1_fun, -100, 100, epsilon, gamma, Nmax);
+	std::cout << lagrangeResult << "\n";
+	solution::clear_calls();
 
 	solution realProblem = fib(f1R, -100, 100, 1e-2, ud1);
 	std::cout << realProblem << "\n";
@@ -152,7 +157,7 @@ void lab1()
 	matrix* simulationFib = solve_ode(df1, 0, 1, 2000, y0, ud1, resultFib.x);
 
 	SAVE_TO_FILE("wynik_proj1_fib.txt") << simulationFib[1];
-	
+
 	matrix* simulationLag = solve_ode(df1, 0, 1, 2000, y0, ud1, resultLag.x);
 
 	SAVE_TO_FILE("wynik_proj1_lag.txt") << simulationLag[1];
