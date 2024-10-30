@@ -1,6 +1,6 @@
 # Optimization
 
-{One day there will be a description here...} xD
+{One day there will be a description here...}
 
 ---
 
