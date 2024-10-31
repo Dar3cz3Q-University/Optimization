@@ -20,3 +20,4 @@ matrix df1(double, matrix, matrix, matrix);
 
 matrix f1R(matrix, matrix = NAN, matrix = NAN);
 
+matrix lab2_fun(matrix, matrix = NAN, matrix = NAN);

@@ -27,7 +27,7 @@ int main()
 {
 	try
 	{
-		lab1();
+		lab2();
 	}
 	catch (string EX_INFO)
 	{
@@ -163,7 +163,33 @@ void lab1()
 	SAVE_TO_FILE("wynik_proj1_lag.txt") << simulationLag[1];
 }
 
-void lab2() {}
+void lab2() 
+{
+	matrix test(2, 1);
+	test(0) = 1.0;
+	test(1) = 1.0;
+
+	std::cout << lab2_fun(test) << "\n";
+
+	matrix x(2, 1);
+	x(0) = 0.5;
+	x(1) = 0.75;
+
+	double s = 0.5;
+	double alpha = 0.9;
+	double epsilon = 1e-20;
+	double Nmax = 10000;
+
+	matrix ud1(2, 2);
+	ud1(0, 0) = 1.0;
+	ud1(1, 1) = 1.0;
+
+	std::cout << ud1 << "\n";
+
+	solution result = HJ(lab2_fun, x, s, alpha, epsilon, Nmax, ud1);
+	std::cout << result << "\n";
+	solution::clear_calls();
+}
 
 void lab3() {}
 

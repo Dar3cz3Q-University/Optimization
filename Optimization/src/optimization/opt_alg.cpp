@@ -266,10 +266,45 @@ solution HJ(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alp
 {
 	try
 	{
-		solution Xopt;
-		// Tu wpisz kod funkcji
+		solution xOpt;
+		solution XB = x0;
+		solution XB_;
+		
+		do
+		{
+			xOpt = HJ_trial(ff, XB, s, ud1, ud2);
+			// Zmienic liczenie ff na fit_fun
 
-		return Xopt;
+			if (ff(xOpt.x, ud1, ud2) < ff(XB.x, ud1, ud2))
+			{
+				do
+				{
+
+					XB_ = XB;
+					XB = xOpt;
+					xOpt.x = 2.0 * XB.x - XB_.x;
+					xOpt = HJ_trial(ff, xOpt, s, ud1, ud2);
+				
+					if (solution::f_calls > Nmax)
+						throw("Przekroczono limit wywolan funkcji :)");
+				
+				} while (ff(xOpt.x, ud1, ud2) < ff(XB.x, ud1, ud2));
+
+				xOpt = XB;
+			}
+			else
+			{
+				s *= alpha;
+			}
+
+			if (solution::f_calls > Nmax)
+				throw("Przekroczono limit wywolan funkcji :)");
+
+		} while (s > epsilon);
+
+		xOpt.fit_fun(ff, ud1, ud2);
+
+		return xOpt;
 	}
 	catch (string ex_info)
 	{
@@ -281,7 +316,14 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 {
 	try
 	{
-		// Tu wpisz kod funkcji
+		for (int i = 0; i < get_len(XB.x); i++)
+		{
+			if (ff(XB.x + s * ud1(i), ud1, ud2) < ff(XB.x, ud1, ud2))
+				XB.x = XB.x + s * ud1(i);
+			else
+				if (ff(XB.x - s * ud1(i), ud1, ud2) < ff(XB.x, ud1, ud2))
+					XB.x = XB.x - s * ud1(i);
+		}
 
 		return XB;
 	}
