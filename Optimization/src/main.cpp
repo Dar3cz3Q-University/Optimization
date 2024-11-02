@@ -171,24 +171,26 @@ void lab2()
 
 	std::cout << lab2_fun(test) << "\n";
 
-	matrix x(2, 1);
-	x(0) = 0.5;
-	x(1) = 0.75;
 
-	double s = 0.5;
-	double alpha = 0.9;
-	double epsilon = 1e-20;
+	double s = 0.1;
+	double alpha = 0.1;
+	double epsilon = 1e-10;
 	double Nmax = 10000;
 
-	matrix ud1(2, 2);
-	ud1(0, 0) = 1.0;
-	ud1(1, 1) = 1.0;
+	for (int i = 0; i < 100; i++)
+	{
+		matrix x(2, 1);
+		x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+		x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
 
-	std::cout << ud1 << "\n";
+		solution result = HJ(lab2_fun, x, s, alpha, epsilon, Nmax);
+		if (abs(m2d(result.y)) < 0.01)
+		{
+			std::cout << result << "\n";
+		}
+		solution::clear_calls();
+	}
 
-	solution result = HJ(lab2_fun, x, s, alpha, epsilon, Nmax, ud1);
-	std::cout << result << "\n";
-	solution::clear_calls();
 }
 
 void lab3() {}
