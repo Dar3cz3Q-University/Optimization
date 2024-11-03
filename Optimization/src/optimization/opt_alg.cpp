@@ -346,8 +346,68 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		int i = 0;
 
+		matrix base(2, 2);
+		base(0, 0) = 1.0;
+		base(1, 1) = 1.0;
+
+		solution lambda_j;
+		solution p_j;
+		solution s_j = s0;
+		solution XB = x0;
+		solution max_s_j = s_j;
+
+		int n = get_len(XB.x);
+		do
+		{
+			for (int j = 0; j < n; j++)
+			{
+				//cout << "XB " << XB.x << endl;
+				//XB.fit_fun(ff, ud1, ud2);
+				if (ff(XB.x + s_j.x*base(i), ud1, ud2) < ff(XB.x, ud1, ud2)) //tutaj trzeba trzeba fitfun?
+				{
+					cout << "halo 1" << solution::f_calls << endl;
+					XB.x = XB.x + s_j.x * base(i);
+					XB.fit_fun(ff, ud1, ud2);
+					lambda_j.x = lambda_j.x + s_j.x;
+					s_j.x = alpha * s_j.x;
+					if (s_j.x > max_s_j.x)
+					{
+						max_s_j = s_j;
+					}; //nie da sie max() bo sie typy nie zgadzaja
+				}
+				else
+				{
+					cout << "halo 2 " << s_j.x << endl;
+					s_j.x = -beta * s_j.x;
+					if (s_j.x > max_s_j.x)
+					{
+						max_s_j = s_j;
+					}; //nie da sie max() bo sie typy nie zgadzaja
+					p_j.x = p_j.x + 1;
+					//p_j.y?
+					
+				}
+			}
+			i++;
+			Xopt = XB;
+			if (lambda_j.x != 0 && p_j.x != 0)
+			{
+				//zmiana bazy kierunkow dj(i)
+				lambda_j.x = 0;
+				p_j = 0;
+				s_j = s0;
+				if (s_j.x > max_s_j.x)
+				{
+					max_s_j = s_j;
+				}; //nie da sie max() bo sie typy nie zgadzaja
+			}
+			if (solution::f_calls > Nmax)
+				throw("Przekroczono limit wywolan funkcji :)");
+			else cout << solution::f_calls << endl;
+		} while (max_s_j.x > epsilon);
+		Xopt.fit_fun(ff, ud1, ud2);
 		return Xopt;
 	}
 	catch (string ex_info)

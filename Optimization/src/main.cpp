@@ -174,8 +174,9 @@ void lab2()
 
 	double s = 0.1;
 	double alpha = 0.1;
-	double epsilon = 1e-10;
-	double Nmax = 10000;
+	double beta = 0.50;
+	double epsilon = 1e-4;
+	double Nmax = 100;
 
 	for (int i = 0; i < 100; i++)
 	{
@@ -190,6 +191,16 @@ void lab2()
 		}
 		solution::clear_calls();
 	}
+
+	cout << "ROSEN" << endl << endl;
+
+	matrix x2(2, 1);
+	x2(0) = 0;
+	x2(1) = 0;
+
+	solution result2 = Rosen(lab2_fun, x2, s, alpha, beta, epsilon, Nmax);
+	cout << result2 << endl;
+	solution::clear_calls();
 
 }
 
