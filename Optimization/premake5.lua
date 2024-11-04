@@ -34,7 +34,7 @@ project "Optimization"
        optimize "On"
        symbols "On"
 
-    filter "configurations:Release - Save results"
+    filter "configurations:Report"
        defines { "NDEBUG", "ENABLE_SAVING_RESULTS" }
        runtime "Release"
        optimize "On"

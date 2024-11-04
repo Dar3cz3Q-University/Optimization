@@ -134,9 +134,8 @@ solution fib(matrix(*ff)(matrix, matrix, matrix), double a, double b, double eps
 		solution c_sol, d_sol;
 		for (int i = 0; i <= k - 3; ++i)
 		{
-#ifdef ENABLE_SAVING_RESULTS
 			SAVE_TO_FILE("fib-b-a.txt") << b0 - a0;
-#endif
+
 			c_sol.x = c0;
 			c_sol.fit_fun(ff, ud1, ud2);
 
@@ -181,9 +180,8 @@ solution lag(matrix(*ff)(matrix, matrix, matrix), double a, double b, double eps
 		double l_prev{}, m_prev{}, di_prev{};
 		do
 		{
-#ifdef ENABLE_SAVING_RESULTS
 			SAVE_TO_FILE("lag-b-a.txt") << bi - ai;
-#endif
+
 			ai_sol.x = ai;
 			ai_sol.fit_fun(ff, ud1, ud2);
 

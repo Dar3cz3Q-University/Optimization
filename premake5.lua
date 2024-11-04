@@ -5,7 +5,7 @@ workspace "Optimization"
     configurations {
         "Debug",
         "Release",
-        "Release - Save results"
+        "Report"
     }
 
     filter { "system:windows", "action:vs2022" }
