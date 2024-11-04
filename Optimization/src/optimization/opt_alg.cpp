@@ -348,16 +348,6 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 #endif
 		}
 
-		for (int i = 0; i < get_len(XB.x); i++)
-		{
-			// TODO: Rewrite this loop to use fitfun function
-			if (ff(XB.x + s * base[i], base, ud2) < ff(XB.x, base, ud2))
-				XB.x = XB.x + s * base[i];
-			else
-				if (ff(XB.x - s * base[i], base, ud2) < ff(XB.x, base, ud2))
-					XB.x = XB.x - s * base[i];
-		}
-
 		return XB;
 	}
 	catch (string ex_info)
