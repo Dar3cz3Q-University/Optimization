@@ -1,0 +1,31 @@
+name: Tests
+run-name: Deploy on ${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Generate Makefile with Premake
+      run: |
+        chmod +x ./Vendor/Binaries/Premake/Linux/premake5
+        ./Vendor/Binaries/Premake/Linux/premake5 --scripts=Vendor/premake-cmake gmake2
+
+    - name: Build binaries
+      run: |
+        make config=debug
+
+    - name: Run tests
+      run: |
+        ./Binaries/Debug-linux-x86_64/Optimization_Tests/Optimization_Tests

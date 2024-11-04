@@ -1,4 +1,4 @@
-project "Optimization - Tests"
+project "Optimization_Tests"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"

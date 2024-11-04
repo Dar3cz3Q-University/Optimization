@@ -38,9 +38,15 @@ private:
 
 		std::filesystem::path workingDir = std::filesystem::current_path();
 
-		std::time_t time = std::time(nullptr);
+		std::time_t rawTime;
 		struct tm result;
-		localtime_s(&result, &time);
+		time(&rawTime);
+
+#ifdef _WIN32
+		localtime_s(&result, &rawTime);
+#else
+		localtime_r(&rawTime, &result);
+#endif
 
 		std::ostringstream newFolderName;
 		newFolderName << std::put_time(&result, "%Y-%m-%d_%H-%M-%S");
@@ -56,5 +62,3 @@ private:
 	std::ofstream m_Ofstream;
 	static std::filesystem::path s_Folder;
 };
-
-
