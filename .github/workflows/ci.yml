@@ -1,5 +1,5 @@
-name: Tests
-run-name: Deploy on ${{ github.ref_name }} by @${{ github.actor }}
+name: Optimization Tests
+run-name: Deploy by @${{ github.actor }}
 
 on:
   push:
