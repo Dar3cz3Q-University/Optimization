@@ -343,71 +343,96 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 
 solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double alpha, double beta, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
+	const int n = 2;
+
 	try
 	{
 		solution Xopt;
-		int i = 0;
 
-		matrix base(2, 2);
+		matrix base(n, n);
 		base(0, 0) = 1.0;
 		base(1, 1) = 1.0;
 
-		solution lambda_j;
-		solution p_j;
-		solution s_j = s0;
-		solution XB = x0;
-		solution max_s_j = s_j;
+		matrix lambda(n, new double[n]{ 0.0 });
+		matrix p(n, new double[n] { 0.0 });
+		matrix XB = x0;
 
-		int n = get_len(XB.x);
+		matrix s = s0;
+		double max_s = 0.0;
+
+		int i = 0;
 		do
 		{
 			for (int j = 0; j < n; j++)
 			{
-				//cout << "XB " << XB.x << endl;
-				//XB.fit_fun(ff, ud1, ud2);
-				if (ff(XB.x + s_j.x*base(i), ud1, ud2) < ff(XB.x, ud1, ud2)) //tutaj trzeba trzeba fitfun?
+				if (ff(XB + s(j) * base[j], ud1, ud2) < ff(XB, ud1, ud2)) // TODO: Rewrite function to use fit_fun
 				{
-					cout << "halo 1" << solution::f_calls << endl;
-					XB.x = XB.x + s_j.x * base(i);
-					XB.fit_fun(ff, ud1, ud2);
-					lambda_j.x = lambda_j.x + s_j.x;
-					s_j.x = alpha * s_j.x;
-					if (s_j.x > max_s_j.x)
-					{
-						max_s_j = s_j;
-					}; //nie da sie max() bo sie typy nie zgadzaja
+					XB = XB + s(j) * base[j];
+					lambda(j) += s(j);
+					s(j) *= alpha;
 				}
 				else
 				{
-					cout << "halo 2 " << s_j.x << endl;
-					s_j.x = -beta * s_j.x;
-					if (s_j.x > max_s_j.x)
-					{
-						max_s_j = s_j;
-					}; //nie da sie max() bo sie typy nie zgadzaja
-					p_j.x = p_j.x + 1;
-					//p_j.y?
-					
+					s(j) *= -beta;
+					p(j) += 1;
 				}
 			}
+
 			i++;
-			Xopt = XB;
-			if (lambda_j.x != 0 && p_j.x != 0)
+			Xopt.x = XB;
+
+			bool changeBase = true;
+			for (int j = 0; j < n; j++)
 			{
-				//zmiana bazy kierunkow dj(i)
-				lambda_j.x = 0;
-				p_j = 0;
-				s_j = s0;
-				if (s_j.x > max_s_j.x)
+				if (lambda(j) == 0 || p(j) == 0)
 				{
-					max_s_j = s_j;
-				}; //nie da sie max() bo sie typy nie zgadzaja
+					changeBase = false;
+					break;
+				}
 			}
+
+			if (changeBase)
+			{
+				matrix lambdaMatrix(n, n);
+				int l = 0;
+				for (int k = 0; k < n; ++k)
+				{
+					for (int j = 0; j <= k; ++j)
+						lambdaMatrix(k, j) = lambda(l);
+					++l;
+				}
+
+				matrix Q = base * lambdaMatrix;
+
+				matrix v1 = Q[0];
+				double v1_norm = norm(v1);
+				v1 = v1 / v1_norm;
+
+				base[0] = v1;
+
+				matrix v2 = Q[1] - (trans(Q[1]) * base[0]) * base[0];
+				double v2_norm = norm(v2);
+				v2 = v2 / v2_norm;
+
+				base[1] = v2;
+
+				lambda = matrix(n, new double[n] { 0.0 });
+				p = matrix(n, new double[n] { 0.0 });
+				s = s0;
+			}
+
 			if (solution::f_calls > Nmax)
-				throw("Przekroczono limit wywolan funkcji :)");
-			else cout << solution::f_calls << endl;
-		} while (max_s_j.x > epsilon);
+				throw string("Przekroczono limit wywolan funkcji :)");
+
+			max_s = 0.0;
+			for (int j = 0; j < n; j++)
+				if (abs(s(j)) > max_s)
+					max_s = abs(s(j));
+			
+		} while (max_s > epsilon);
+
 		Xopt.fit_fun(ff, ud1, ud2);
+
 		return Xopt;
 	}
 	catch (string ex_info)

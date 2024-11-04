@@ -171,35 +171,44 @@ void lab2()
 
 	std::cout << lab2_fun(test) << "\n";
 
-
 	double s = 0.1;
-	double alpha = 0.1;
+	double alpha_1 = 0.1;
 	double beta = 0.50;
 	double epsilon = 1e-4;
 	double Nmax = 100;
 
-	for (int i = 0; i < 100; i++)
+	/*for (int i = 0; i < 100; i++)
 	{
 		matrix x(2, 1);
 		x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
 		x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
 
-		solution result = HJ(lab2_fun, x, s, alpha, epsilon, Nmax);
+		solution result = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
 		if (abs(m2d(result.y)) < 0.01)
 		{
 			std::cout << result << "\n";
 		}
 		solution::clear_calls();
-	}
+	}*/
 
 	cout << "ROSEN" << endl << endl;
 
 	matrix x2(2, 1);
-	x2(0) = 0;
-	x2(1) = 0;
+	x2(0) = 0.5;
+	x2(1) = 0.75;
 
-	solution result2 = Rosen(lab2_fun, x2, s, alpha, beta, epsilon, Nmax);
+	matrix sv(2, 1);
+	sv(0) = s;
+	sv(1) = s;
+
+	double alpha_2 = 1.1;
+
+	solution result2 = Rosen(lab2_fun, x2, sv, alpha_2, beta, epsilon, Nmax);
 	cout << result2 << endl;
+	solution::clear_calls();
+
+	solution result3 = HJ(lab2_fun, x2, s, alpha_1, epsilon, Nmax);
+	cout << result3 << endl;
 	solution::clear_calls();
 
 }
