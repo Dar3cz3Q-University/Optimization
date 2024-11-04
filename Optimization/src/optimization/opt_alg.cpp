@@ -358,10 +358,95 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 
 solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double alpha, double beta, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
+	const int n = 2;
+
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+
+		matrix base(n, n);
+		base(0, 0) = 1.0;
+		base(1, 1) = 1.0;
+
+		matrix lambda(n, new double[n]{ 0.0 });
+		matrix p(n, new double[n] { 0.0 });
+		matrix XB = x0;
+
+		matrix s = s0;
+		double max_s = 0.0;
+
+		int i = 0;
+		do
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (ff(XB + s(j) * base[j], ud1, ud2) < ff(XB, ud1, ud2)) // TODO: Rewrite function to use fit_fun
+				{
+					XB = XB + s(j) * base[j];
+					lambda(j) += s(j);
+					s(j) *= alpha;
+				}
+				else
+				{
+					s(j) *= -beta;
+					p(j) += 1;
+				}
+			}
+
+			i++;
+			Xopt.x = XB;
+
+			bool changeBase = true;
+			for (int j = 0; j < n; j++)
+			{
+				if (lambda(j) == 0 || p(j) == 0)
+				{
+					changeBase = false;
+					break;
+				}
+			}
+
+			if (changeBase)
+			{
+				matrix lambdaMatrix(n, n);
+				int l = 0;
+				for (int k = 0; k < n; ++k)
+				{
+					for (int j = 0; j <= k; ++j)
+						lambdaMatrix(k, j) = lambda(l);
+					++l;
+				}
+
+				matrix Q = base * lambdaMatrix;
+
+				matrix v1 = Q[0];
+				double v1_norm = norm(v1);
+				v1 = v1 / v1_norm;
+
+				base[0] = v1;
+
+				matrix v2 = Q[1] - (trans(Q[1]) * base[0]) * base[0];
+				double v2_norm = norm(v2);
+				v2 = v2 / v2_norm;
+
+				base[1] = v2;
+
+				lambda = matrix(n, new double[n] { 0.0 });
+				p = matrix(n, new double[n] { 0.0 });
+				s = s0;
+			}
+
+			if (solution::f_calls > Nmax)
+				throw string("Przekroczono limit wywolan funkcji :)");
+
+			max_s = 0.0;
+			for (int j = 0; j < n; j++)
+				if (abs(s(j)) > max_s)
+					max_s = abs(s(j));
+			
+		} while (max_s > epsilon);
+
+		Xopt.fit_fun(ff, ud1, ud2);
 
 		return Xopt;
 	}
