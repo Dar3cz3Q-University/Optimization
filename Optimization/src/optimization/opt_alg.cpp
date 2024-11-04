@@ -266,10 +266,48 @@ solution HJ(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alp
 {
 	try
 	{
-		solution Xopt;
-		// Tu wpisz kod funkcji
+		solution xOpt;
+		solution XB = x0;
+		solution XB_;
+		
+		do
+		{
+			xOpt = HJ_trial(ff, XB, s);
 
-		return Xopt;
+			xOpt.fit_fun(ff, ud1, ud2);
+			XB.fit_fun(ff, ud1, ud2);
+
+			if (xOpt.y < XB.y)
+			{
+				do
+				{
+
+					XB_ = XB;
+					XB = xOpt;
+					xOpt.x = 2.0 * XB.x - XB_.x;
+					xOpt = HJ_trial(ff, xOpt, s);
+				
+					xOpt.fit_fun(ff, ud1, ud2);
+					XB.fit_fun(ff, ud1, ud2);
+
+					if (solution::f_calls > Nmax)
+						throw("Przekroczono limit wywolan funkcji :)");
+				
+				} while (xOpt.y < XB.y);
+
+				xOpt = XB;
+			}
+			else
+			{
+				s *= alpha;
+			}
+
+			if (solution::f_calls > Nmax)
+				throw("Przekroczono limit wywolan funkcji :)");
+
+		} while (s > epsilon);
+
+		return xOpt;
 	}
 	catch (string ex_info)
 	{
@@ -281,7 +319,34 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 {
 	try
 	{
-		// Tu wpisz kod funkcji
+		matrix base(2, 2);
+		base(0, 0) = 1.0;
+		base(1, 1) = 1.0;
+		solution tempSolution;
+
+		for (int i = 0; i < get_len(XB.x); i++)
+		{
+#if 1
+			XB.fit_fun(ff, base, ud2);
+			matrix y1 = XB.y;
+
+			tempSolution.x = XB.x + s * base[i], base, ud2;
+			if (tempSolution.fit_fun(ff, base, ud2) < y1)
+				XB.x = XB.x + s * base[i];
+			else
+			{
+				tempSolution.x = XB.x - s * base[i], base, ud2;
+				if (tempSolution.fit_fun(ff, base, ud2) < y1)
+					XB.x = XB.x = XB.x - s * base[i];
+			}
+#else
+			if (ff(XB.x + s * base[i], base, ud2) < ff(XB.x, base, ud2))
+				XB.x = XB.x + s * base[i];
+			else
+				if (ff(XB.x - s * base[i], base, ud2) < ff(XB.x, base, ud2))
+					XB.x = XB.x - s * base[i];
+#endif
+		}
 
 		return XB;
 	}

@@ -97,3 +97,12 @@ matrix f1R(matrix x, matrix ud1, matrix ud2)
 
 	return y;
 }
+
+matrix lab2_fun(matrix x, matrix ud1, matrix ud2)
+{
+	matrix y;
+
+	y = pow(x(0), 2) + pow(x(1), 2) - cos(2.5 * M_PI * x(0)) - cos(2.5 * M_PI * x(1)) + 2;
+
+	return y;
+}
