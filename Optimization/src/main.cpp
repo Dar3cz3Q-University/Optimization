@@ -106,23 +106,17 @@ void lab1()
 			// Expansion
 			double x0 = RandomNumberGenerator::Get().Double(0, 100);
 			double* expansionResult = expansion(lab1_fun, x0, 1, alpha, Nmax);
-
 			SAVE_TO_FILE("expansion-" + std::to_string(alpha) + ".txt") << x0 << expansionResult[0] << expansionResult[1] << solution::f_calls;
-
 			solution::clear_calls();
 
 			// Fibonacci
 			solution fibonacciResult = fib(lab1_fun, expansionResult[0], expansionResult[1], epsilon, Nmax);
-
 			SAVE_TO_FILE("fibonacci-" + std::to_string(alpha) + ".txt") << fibonacciResult.x << fibonacciResult.y << solution::f_calls;
-
 			solution::clear_calls();
 
 			// Lagrange
 			solution lagrangeResult = lag(lab1_fun, expansionResult[0], expansionResult[1], epsilon, gamma, Nmax);
-
 			SAVE_TO_FILE("lagrange-" + std::to_string(alpha) + ".txt") << lagrangeResult.x << lagrangeResult.y << solution::f_calls;
-
 			solution::clear_calls();
 
 			delete[] expansionResult;
@@ -155,11 +149,9 @@ void lab1()
 	matrix y0 = matrix(3, new double[3] { 5.0, 1.0, 20.0 });
 
 	matrix* simulationFib = solve_ode(df1, 0, 1, 2000, y0, ud1, resultFib.x);
-
 	SAVE_TO_FILE("wynik_proj1_fib.txt") << simulationFib[1];
 
 	matrix* simulationLag = solve_ode(df1, 0, 1, 2000, y0, ud1, resultLag.x);
-
 	SAVE_TO_FILE("wynik_proj1_lag.txt") << simulationLag[1];
 }
 
@@ -207,6 +199,31 @@ void lab2()
 	cout << result2 << endl;
 	solution::clear_calls();
 
+void lab2() 
+{
+	matrix test(2, 1);
+	test(0) = 1.0;
+	test(1) = 1.0;
+
+	std::cout << lab2_fun(test) << "\n";
+
+	double s = 0.1;
+	double alpha = 0.1;
+	double epsilon = 1e-10;
+	double Nmax = 10000;
+
+	for (int i = 0; i < 100; i++)
+	{
+		matrix x(2, 1);
+		x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+		x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+
+		solution result = HJ(lab2_fun, x, s, alpha, epsilon, Nmax);
+		if (abs(m2d(result.y)) < 0.01)
+			std::cout << result << "\n";
+		solution::clear_calls();
+	}
+}
 	solution result3 = HJ(lab2_fun, x2, s, alpha_1, epsilon, Nmax);
 	cout << result3 << endl;
 	solution::clear_calls();

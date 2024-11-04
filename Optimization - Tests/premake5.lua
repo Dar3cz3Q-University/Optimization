@@ -1,4 +1,4 @@
-project "Optimization"
+project "Optimization - Tests"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"
@@ -9,14 +9,29 @@ project "Optimization"
    flags { "MultiProcessorCompile" }
 
    pchheader "pch.h"
-   pchsource "src/pch.cpp"
+   pchsource "../Optimization/src/pch.cpp"
 
-   files { "src/**.h", "src/**.cpp" }
+   files { 
+    "tests/**.cpp",
+
+    "../Optimization/src/**.h",
+    "../Optimization/src/**.cpp"
+   }
+
+   removefiles {
+       "../Optimization/src/main.cpp"
+   }
 
    includedirs {
-       "src",
-       "src/optimization",
-       "src/utils"
+    "../Dependencies/googletest/googletest/include",
+
+    "../Optimization/src",
+    "../Optimization/src/optimization",
+    "../Optimization/src/utils"
+   }
+
+   links {
+    "GoogleTest"
    }
 
    filter "system:windows"
@@ -33,12 +48,3 @@ project "Optimization"
        runtime "Release"
        optimize "On"
        symbols "On"
-
-    filter "configurations:Report"
-       defines { "NDEBUG", "ENABLE_SAVING_RESULTS" }
-       runtime "Release"
-       optimize "On"
-       symbols "On"
-
-   filter "action:cmake"
-       defines { "USE_CLION" }

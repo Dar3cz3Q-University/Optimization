@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef ENABLE_SAVING_RESULTS
 #define SAVE_TO_FILE(filename) FileSaver(filename)
+#else
+#define SAVE_TO_FILE(filename) if (false) std::ofstream()
+#endif
 
 auto constexpr PRECISION = 5;
 auto constexpr SEPARATOR = ';';

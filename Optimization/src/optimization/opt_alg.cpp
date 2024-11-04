@@ -322,6 +322,31 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 		matrix base(2, 2);
 		base(0, 0) = 1.0;
 		base(1, 1) = 1.0;
+		solution tempSolution;
+
+		for (int i = 0; i < get_len(XB.x); i++)
+		{
+#if 1
+			XB.fit_fun(ff, base, ud2);
+			matrix y1 = XB.y;
+
+			tempSolution.x = XB.x + s * base[i], base, ud2;
+			if (tempSolution.fit_fun(ff, base, ud2) < y1)
+				XB.x = XB.x + s * base[i];
+			else
+			{
+				tempSolution.x = XB.x - s * base[i], base, ud2;
+				if (tempSolution.fit_fun(ff, base, ud2) < y1)
+					XB.x = XB.x = XB.x - s * base[i];
+			}
+#else
+			if (ff(XB.x + s * base[i], base, ud2) < ff(XB.x, base, ud2))
+				XB.x = XB.x + s * base[i];
+			else
+				if (ff(XB.x - s * base[i], base, ud2) < ff(XB.x, base, ud2))
+					XB.x = XB.x - s * base[i];
+#endif
+		}
 
 		for (int i = 0; i < get_len(XB.x); i++)
 		{
