@@ -106,23 +106,23 @@ void lab1()
 			// Expansion
 			double x0 = RandomNumberGenerator::Get().Double(0, 100);
 			double* expansionResult = expansion(lab1_fun, x0, 1, alpha, Nmax);
-
+#ifdef ENABLE_SAVING_RESULTS
 			SAVE_TO_FILE("expansion-" + std::to_string(alpha) + ".txt") << x0 << expansionResult[0] << expansionResult[1] << solution::f_calls;
-
+#endif
 			solution::clear_calls();
 
 			// Fibonacci
 			solution fibonacciResult = fib(lab1_fun, expansionResult[0], expansionResult[1], epsilon, Nmax);
-
+#ifdef ENABLE_SAVING_RESULTS
 			SAVE_TO_FILE("fibonacci-" + std::to_string(alpha) + ".txt") << fibonacciResult.x << fibonacciResult.y << solution::f_calls;
-
+#endif
 			solution::clear_calls();
 
 			// Lagrange
 			solution lagrangeResult = lag(lab1_fun, expansionResult[0], expansionResult[1], epsilon, gamma, Nmax);
-
+#ifdef ENABLE_SAVING_RESULTS
 			SAVE_TO_FILE("lagrange-" + std::to_string(alpha) + ".txt") << lagrangeResult.x << lagrangeResult.y << solution::f_calls;
-
+#endif
 			solution::clear_calls();
 
 			delete[] expansionResult;
@@ -155,12 +155,14 @@ void lab1()
 	matrix y0 = matrix(3, new double[3] { 5.0, 1.0, 20.0 });
 
 	matrix* simulationFib = solve_ode(df1, 0, 1, 2000, y0, ud1, resultFib.x);
-
+#ifdef ENABLE_SAVING_RESULTS
 	SAVE_TO_FILE("wynik_proj1_fib.txt") << simulationFib[1];
+#endif
 
 	matrix* simulationLag = solve_ode(df1, 0, 1, 2000, y0, ud1, resultLag.x);
-
+#ifdef ENABLE_SAVING_RESULTS
 	SAVE_TO_FILE("wynik_proj1_lag.txt") << simulationLag[1];
+#endif
 }
 
 void lab2() {}
