@@ -1,4 +1,4 @@
-name: Optimization Tests
+name: Tests
 run-name: Deploy by @${{ github.actor }}
 
 on:

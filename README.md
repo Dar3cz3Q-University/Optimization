@@ -1,6 +1,8 @@
 # Optimization
 
-{One day there will be a description here...}
+[![Tests Status](https://github.com/Dar3cz3Q-University/Optimization/actions/workflows/ci.yml/badge.svg)](https://github.com/Dar3cz3Q-University/Optimization/tree/master)
+
+Program calculating extrema of a function and more...
 
 ---
 
