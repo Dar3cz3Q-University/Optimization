@@ -5,6 +5,8 @@
 #include "optimization/opt_alg.h"
 #include "utils/RandomNumberGenerator.h"
 
+namespace lab_1
+{
 static const double EPSILON = 1e-4;
 
 TEST(expansion, handles_defined_values)
@@ -21,3 +23,4 @@ TEST(lag, handles_defined_values)
 {
 	// TODO: Write some tests ;)
 }
+} // namespace lab_1
