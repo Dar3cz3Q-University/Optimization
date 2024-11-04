@@ -171,7 +171,6 @@ void lab2()
 
 	std::cout << lab2_fun(test) << "\n";
 
-
 	double s = 0.1;
 	double alpha = 0.1;
 	double epsilon = 1e-10;
@@ -185,9 +184,7 @@ void lab2()
 
 		solution result = HJ(lab2_fun, x, s, alpha, epsilon, Nmax);
 		if (abs(m2d(result.y)) < 0.01)
-		{
 			std::cout << result << "\n";
-		}
 		solution::clear_calls();
 	}
 
