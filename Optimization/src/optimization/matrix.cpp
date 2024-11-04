@@ -431,7 +431,7 @@ double det(const matrix& A)
 			matrix T(nA[0] - 1, nA[0] - 1);
 			for (int i = 0; i < nA[0] - 1; ++i)
 				for (int j = 0; j < nA[1] - 1; ++j)
-					T(i, j) = A(0, j >= k ? j + 1 : j);
+					T(i, j) = A(i + 1, j >= k ? j + 1 : j);
 			D = D + A(0, k) * pow(-1.0, k) * det(T);
 		}
 	}
@@ -457,7 +457,7 @@ matrix inv(const matrix& A)
 					matrix T(nA[0] - 1, nA[0] - 1);
 					for (int i = 0; i < nA[0] - 1; ++i)
 						for (int j = 0; j < nA[1] - 1; ++j)
-							T(i, j) = A(i >= k ? 0 : i, j >= l ? j + 1 : j);
+							T(i, j) = A(i >= k ? i + 1 : i, j >= l ? j + 1 : j);
 					I(k, l) = pow(-1.0, k + l) * det(T);
 				}
 			I = 1 / D * trans(I);
