@@ -179,7 +179,6 @@ void lab2()
 			std::cout << result << "\n";
 		solution::clear_calls();
 	}
-
 }
 
 void lab3() {}

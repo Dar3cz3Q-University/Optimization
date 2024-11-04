@@ -3,16 +3,18 @@
 
 #include "optimization/user_funs.h"
 
+namespace lab_1
+{
 static const double EPSILON = 1e-10;
 
-static struct Point
+struct Point
 {
 	double x, y;
 };
 
 TEST(lab_1_fun, handles_defined_values)
 {
-
+	// Given
 	Point points[] = {
 		{ 51.6181000476, -0.0702538786 },
 		{ 95.8144372901, 0.1836267561 },
@@ -28,7 +30,10 @@ TEST(lab_1_fun, handles_defined_values)
 
 	for (const auto& point : points)
 	{
+		// When
 		matrix result = lab1_fun(point.x);
+
+		// Then
 		EXPECT_NEAR(point.y, m2d(result), EPSILON);
 	}
 }
@@ -37,3 +42,4 @@ TEST(df1, handles_defined_values)
 {
 	// TODO: Write some tests ;)
 }
+} // namespace lab_1
