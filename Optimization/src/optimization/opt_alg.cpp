@@ -330,12 +330,12 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 			XB.fit_fun(ff, base, ud2);
 			matrix y1 = XB.y;
 
-			tempSolution.x = XB.x + s * base[i], base, ud2;
+			tempSolution.x = XB.x + s * base[i];
 			if (tempSolution.fit_fun(ff, base, ud2) < y1)
 				XB.x = XB.x + s * base[i];
 			else
 			{
-				tempSolution.x = XB.x - s * base[i], base, ud2;
+				tempSolution.x = XB.x - s * base[i];
 				if (tempSolution.fit_fun(ff, base, ud2) < y1)
 					XB.x = XB.x = XB.x - s * base[i];
 			}

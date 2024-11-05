@@ -21,4 +21,4 @@ workspace "Optimization"
     group ""
 
     include "Optimization/premake5.lua"
-    include "Optimization - Tests/premake5.lua"
+    include "Optimization_Tests/premake5.lua"
