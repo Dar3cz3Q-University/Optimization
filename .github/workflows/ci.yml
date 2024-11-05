@@ -19,10 +19,13 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Generate Makefile with Premake
+    - name: Install Clang
+      run: sudo apt-get install -y clang
+
+    - name: Generate Makefile with Premake5
       run: |
-        chmod +x ./Vendor/Binaries/Premake/Linux/premake5
-        ./Vendor/Binaries/Premake/Linux/premake5 --scripts=Vendor/premake-cmake gmake2
+        chmod +x ./Scripts/Setup-Linux.sh
+        ./Scripts/Setup-Linux.sh
 
     - name: Build binaries
       run: |
