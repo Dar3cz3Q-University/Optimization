@@ -4,9 +4,7 @@
 
 #include "ode_solver.h"
 
-#define _USE_MATH_DEFINES
-
-inline const double EARTH_ACCELERATION = 9.81;
+inline constexpr double EARTH_ACCELERATION = 9.81;
 
 matrix ff0T(matrix, matrix = NAN, matrix = NAN);
 
