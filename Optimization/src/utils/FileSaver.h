@@ -34,6 +34,8 @@ public:
 private:
 	static void GenerateFolder()
 	{
+		if (!std::filesystem::exists(RESULTS_FOLDER_PATH)) std::filesystem::create_directory(RESULTS_FOLDER_PATH);
+
 		if (std::filesystem::exists(s_Folder)) return;
 
 		std::filesystem::path workingDir = std::filesystem::current_path();
