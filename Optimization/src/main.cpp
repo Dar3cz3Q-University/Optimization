@@ -161,14 +161,20 @@ void lab2()
 	test(0) = 1.0;
 	test(1) = 1.0;
 
-	std::cout << lab2_fun(test) << "\n";
+	//std::cout << lab2_fun(test) << "\n";
 
 	double s = 0.1;
 	double alpha_1 = 0.1;
 	double beta = 0.50;
 	double epsilon = 1e-4;
 	int Nmax = 1000;
+	double alpha_2 = 1.1;
 
+	matrix sv(2, 1);
+	sv(0) = s;
+	sv(1) = s;
+
+	
 	/*for (int i = 0; i < 100; i++)
 	{
 		matrix x(2, 1);
@@ -181,25 +187,36 @@ void lab2()
 			std::cout << result << "\n";
 		}
 		solution::clear_calls();
+
+		solution result2 = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
+		if (abs(m2d(result2.y)) < 0.01)
+		{
+			std::cout << result2 << "\n";
+		}
+		solution::clear_calls();
 	}*/
 
-	matrix x2(2, 1);
-	x2(0) = 0.5;
-	x2(1) = 0.75;
 
-	matrix sv(2, 1);
-	sv(0) = s;
-	sv(1) = s;
+	// Prawdziwy przyklad czy cos
+	matrix Y(2, 1);
+	Y(0) = 0;
+	Y(1) = 1;
 
-	double alpha_2 = 1.1;
+	matrix ud1(2, 1);
+	ud1(0) = M_PI;
+	ud1(1) = 0;
 
-	solution result2 = Rosen(lab2_fun, x2, sv, alpha_2, beta, epsilon, Nmax);
-	cout << result2 << endl;
-	solution::clear_calls();
+	matrix k(2, 1);
+	k(0) = 5.0;
+	k(1) = 5.0;
+	matrix result = df2(0, Y, ud1, k);
+	cout << result << endl;
 
-	solution result3 = HJ(lab2_fun, x2, s, alpha_1, epsilon, Nmax);
-	cout << result3 << endl;
-	solution::clear_calls();
+	cout << f2R(k);
+
+	//solution result3 = HJ(lab2_fun, x2, s, alpha_1, epsilon, Nmax);
+	//cout << result3 << endl;
+	//solution::clear_calls();
 }
 
 void lab3() {}
