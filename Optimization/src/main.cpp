@@ -175,7 +175,7 @@ void lab2()
 	sv(1) = s;
 
 	
-	/*for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		matrix x(2, 1);
 		x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
@@ -194,7 +194,7 @@ void lab2()
 			std::cout << result2 << "\n";
 		}
 		solution::clear_calls();
-	}*/
+	}
 
 
 	// Prawdziwy przyklad czy cos

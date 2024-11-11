@@ -50,13 +50,10 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 		sx0.fit_fun(ff);
 		sx1.fit_fun(ff);
 
-		// cout << "f(" << m2d(sx0.x) << ") = " << m2d(sx0.y) << endl;
-		// cout << "f(" << m2d(sx1.x) << ") = " << m2d(sx1.y) << endl;
-
 		if (sx0.y == sx1.y)
 		{
 			p[0] = m2d(sx0.x);
-			p[1] = m2d(sx0.y); // czy to w sumie jest dobrze? imo powinno byc sx1.x zgodnie z "konwencją" nazewnictwa tego programu x^(id) to sxID.x, sx0.y byloby f(x^(0)) a jest w pseudokodzie x^(1)
+			p[1] = m2d(sx0.y);
 
 			return p;
 		}
@@ -76,7 +73,7 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 		}
 
 		solution sx2(x0 + d);
-		sx2.fit_fun(ff); // tego brakowalo, inaczej wychodzila wartosc sx2.y = -nan(ind)
+		sx2.fit_fun(ff);
 
 		do
 		{
@@ -89,8 +86,7 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 
 			sx2.x = m2d(sx0.x) + pow(alpha, i) * d;
 			sx2.fit_fun(ff);
-			// cout << m2d(sx1.y) << " > " << m2d(sx2.y) << " ? " << endl;
-		} while (m2d(sx1.y) > m2d(sx2.y)); // tu teraz porownuje przed m2d (przedtem brakowalo, tak jest bezpieczniej imo)
+		} while (m2d(sx1.y) > m2d(sx2.y));
 
 		if (d > 0)
 		{
@@ -241,9 +237,7 @@ solution lag(matrix(*ff)(matrix, matrix, matrix), double a, double b, double eps
 			}
 
 			if (i > 0)
-			{
 				di_prev = 0.5 * l_prev / m_prev;
-			}
 
 			l_prev = l;
 			m_prev = m;
@@ -298,9 +292,7 @@ solution HJ(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alp
 				xOpt = XB;
 			}
 			else
-			{
 				s *= alpha;
-			}
 
 			if (solution::f_calls > Nmax)
 				throw("Przekroczono limit wywolan funkcji :)");
@@ -326,7 +318,6 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 
 		for (int i = 0; i < get_len(XB.x); i++)
 		{
-#if 1
 			XB.fit_fun(ff, base, ud2);
 			matrix y1 = XB.y;
 
@@ -339,13 +330,6 @@ solution HJ_trial(matrix(*ff)(matrix, matrix, matrix), solution XB, double s, ma
 				if (tempSolution.fit_fun(ff, base, ud2) < y1)
 					XB.x = XB.x = XB.x - s * base[i];
 			}
-#else
-			if (ff(XB.x + s * base[i], base, ud2) < ff(XB.x, base, ud2))
-				XB.x = XB.x + s * base[i];
-			else
-				if (ff(XB.x - s * base[i], base, ud2) < ff(XB.x, base, ud2))
-					XB.x = XB.x - s * base[i];
-#endif
 		}
 
 		return XB;
@@ -370,7 +354,8 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 
 		matrix lambda(n, new double[n]{ 0.0 });
 		matrix p(n, new double[n] { 0.0 });
-		matrix XB = x0;
+		solution XB = x0;
+		solution XB2 = 0;
 
 		matrix s = s0;
 		double max_s = 0.0;
@@ -380,9 +365,12 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 		{
 			for (int j = 0; j < n; j++)
 			{
-				if (ff(XB + s(j) * base[j], ud1, ud2) < ff(XB, ud1, ud2)) // TODO: Rewrite function to use fit_fun
+				XB2 = XB.x + s(j) * base[j];
+				XB2.fit_fun(ff, ud1, ud2);
+				XB.fit_fun(ff, ud1, ud2);
+				if (XB2.y < XB.y)
 				{
-					XB = XB + s(j) * base[j];
+					XB.x = XB.x + s(j) * base[j];
 					lambda(j) += s(j);
 					s(j) *= alpha;
 				}
@@ -394,7 +382,7 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 			}
 
 			i++;
-			Xopt.x = XB;
+			Xopt.x = XB.x;
 
 			bool changeBase = true;
 			for (int j = 0; j < n; j++)
