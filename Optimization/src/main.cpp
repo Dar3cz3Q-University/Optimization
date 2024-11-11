@@ -15,6 +15,7 @@ Data ostatniej modyfikacji: 19.09.2023
 #include "RandomNumberGenerator.h"
 #include "FileSaver.h"
 
+
 void lab0();
 void lab1();
 void lab2();
@@ -156,67 +157,103 @@ void lab1()
 }
 
 void lab2() 
-{
-	matrix test(2, 1);
-	test(0) = 1.0;
-	test(1) = 1.0;
-
-	//std::cout << lab2_fun(test) << "\n";
+{	
+	double alpha_1 = 0.1;
+	double alpha_2 = 1.1;
+	double beta = 0.50;
+	double epsilon = 1e-6;
+	int Nmax = 2000;
 
 	double s = 0.1;
-	double alpha_1 = 0.1;
-	double beta = 0.50;
-	double epsilon = 1e-4;
-	int Nmax = 1000;
-	double alpha_2 = 1.1;
-
 	matrix sv(2, 1);
 	sv(0) = s;
 	sv(1) = s;
 
-	
-	for (int i = 0; i < 100; i++)
+	for (int k = 1; k <= 3; k++) 
+	{
+		s = 0.1 * k;
+		sv(0) = s;
+		sv(1) = s;
+		for (int i = 0; i < 100; i++)
+		{
+			matrix x(2, 1);
+			x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+			x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+
+			SAVE_TO_FILE("args-" + std::to_string(k) + ".txt") << x(0) << ";" << x(1) << "\n";
+			solution::clear_calls();
+			
+			// Hooke
+			solution hookeResult = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
+			SAVE_TO_FILE("hooke-" + std::to_string(k) + ".txt") << hookeResult.x(0) << ";" << hookeResult.x(1) << ";" << hookeResult.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+			
+			// Rosen
+			solution rosenResult = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
+			SAVE_TO_FILE("rosen-" + std::to_string(k) + ".txt") << rosenResult.x(0) << ";" << rosenResult.x(1) << ";" << rosenResult.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+			
+		}
+	}
+
+	// liczenie po iteracjach - jest to pierwszy obliczony przypadek z tab1, dla s = 0.2
+	s = 0.2;
+	sv(0) = s;
+	sv(1) = s;
+
+	matrix x(2, 1);
+	x(0) = 0.2388;
+	x(1) = -0.74822;
+
+	solution hookeResult = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
+	solution::clear_calls();
+
+	solution rosenResult = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
+	solution::clear_calls();
+
+	// Symulacja
 	{
 		matrix x(2, 1);
 		x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
 		x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
 
-		solution result = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
-		if (abs(m2d(result.y)) < 0.01)
-		{
-			std::cout << result << "\n";
-		}
+		double alpha1 = 0.5; // for HJ
+		double alpha2 = 1.3; // for Rosen
+		double beta = 0.5; // for Rosen
+		double epsilon = 1e20;
+		int Nmax = 10000;
+
+		double s = 0.4;
+		matrix sv(2, 1);
+		sv(0) = s;
+		sv(1) = s;
+
+		matrix ud1(2, 1);
+		ud1(0) = M_PI;
+		ud1(1) = 0;
+
+		matrix ud2(2, 1);
+		ud2(0) = 3.0;
+		ud2(1) = 3.0;
+
+		matrix y0(2, 1);
+		y0(0) = 0;
+		y0(1) = 1;
+
+		solution HJResult_sim = HJ(f2R, x, s, alpha1, epsilon, Nmax, ud1, ud2);
+		std::cout << "Simulation HJ result: " << HJResult_sim;
 		solution::clear_calls();
 
-		solution result2 = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
-		if (abs(m2d(result2.y)) < 0.01)
-		{
-			std::cout << result2 << "\n";
-		}
+		solution RosenResult_sim = Rosen(f2R, x, sv, alpha2, beta, epsilon, Nmax, ud1, ud2);
+		std::cout << "Simulation Rosen result: " << RosenResult_sim;
 		solution::clear_calls();
+
+		matrix* simulationHooke = solve_ode(df2, 0, 0.1, 100, y0, ud1, HJResult_sim.x);
+		SAVE_TO_FILE("symHJ.txt") << simulationHooke[1];
+
+		matrix* simulationRosen = solve_ode(df2, 0, 0.1, 100, y0, ud1, RosenResult_sim.x);
+		SAVE_TO_FILE("symRosen.txt") << simulationRosen[1];
 	}
-
-
-	// Prawdziwy przyklad czy cos
-	matrix Y(2, 1);
-	Y(0) = 0;
-	Y(1) = 1;
-
-	matrix ud1(2, 1);
-	ud1(0) = M_PI;
-	ud1(1) = 0;
-
-	matrix k(2, 1);
-	k(0) = 5.0;
-	k(1) = 5.0;
-	matrix result = df2(0, Y, ud1, k);
-	cout << result << endl;
-
-	cout << f2R(k);
-
-	//solution result3 = HJ(lab2_fun, x2, s, alpha_1, epsilon, Nmax);
-	//cout << result3 << endl;
-	//solution::clear_calls();
 }
 
 void lab3() {}
