@@ -192,7 +192,6 @@ void lab2()
 			solution rosenResult = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
 			SAVE_TO_FILE("rosen-" + std::to_string(k) + ".txt") << rosenResult.x(0) << ";" << rosenResult.x(1) << ";" << rosenResult.y(0) << ";" << solution::f_calls << "\n";
 			solution::clear_calls();
-			
 		}
 	}
 
@@ -249,10 +248,10 @@ void lab2()
 		solution::clear_calls();
 
 		matrix* simulationHooke = solve_ode(df2, 0, 0.1, 100, y0, ud1, HJResult_sim.x);
-		SAVE_TO_FILE("symHJ.txt") << simulationHooke[1];
+		SAVE_TO_FILE("simulation-HJ.txt") << simulationHooke[1];
 
 		matrix* simulationRosen = solve_ode(df2, 0, 0.1, 100, y0, ud1, RosenResult_sim.x);
-		SAVE_TO_FILE("symRosen.txt") << simulationRosen[1];
+		SAVE_TO_FILE("simulation-Rosen.txt") << simulationRosen[1];
 	}
 }
 

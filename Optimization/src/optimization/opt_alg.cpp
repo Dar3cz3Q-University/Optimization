@@ -275,6 +275,7 @@ solution HJ(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alp
 			{
 				do
 				{
+					SAVE_TO_FILE("x1.x2-HJ.txt") << m2d(XB.x(0)) << ";" << m2d(XB.x(1)) << "\n";
 
 					XB_ = XB;
 					XB = xOpt;
@@ -363,6 +364,8 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 		int i = 0;
 		do
 		{
+			SAVE_TO_FILE("x1.x2-Rosen.txt") << m2d(XB.x(0)) << ";" << m2d(XB.x(1)) << "\n";
+
 			for (int j = 0; j < n; j++)
 			{
 				XB2 = XB.x + s(j) * base[j];
