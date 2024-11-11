@@ -291,7 +291,7 @@ solution HJ(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alp
 					XB.fit_fun(ff, ud1, ud2);
 
 					if (solution::f_calls > Nmax)
-						throw("Przekroczono limit wywolan funkcji :)");
+						throw std::string("Przekroczono limit wywolan funkcji :)");
 				
 				} while (xOpt.y < XB.y);
 
@@ -303,7 +303,7 @@ solution HJ(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alp
 			}
 
 			if (solution::f_calls > Nmax)
-				throw("Przekroczono limit wywolan funkcji :)");
+				throw std::string("Przekroczono limit wywolan funkcji :)");
 
 		} while (s > epsilon);
 

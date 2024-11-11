@@ -162,19 +162,60 @@ void lab2()
 	test(1) = 1.0;
 
 	//std::cout << lab2_fun(test) << "\n";
-
-	double s = 0.1;
+	
 	double alpha_1 = 0.1;
 	double beta = 0.50;
 	double epsilon = 1e-4;
-	int Nmax = 1000;
+	int Nmax = 10000;
 	double alpha_2 = 1.1;
 
+	double s = 0.1;
 	matrix sv(2, 1);
 	sv(0) = s;
 	sv(1) = s;
 
+	for (int k = 1; k <= 3; k++) 
+	{
+		s = 0.1 * k;
+		sv(0) = s;
+		sv(1) = s;
+		for (int i = 0; i < 100; i++)
+		{
+
+			matrix x(2, 1);
+			x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+			x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+
+			SAVE_TO_FILE("args-" + std::to_string(k) + ".txt") << x(0) << ";" << x(1) << "\n";
+			solution::clear_calls();
+			
+			// Hooke
+			solution hookeResult = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
+			SAVE_TO_FILE("hooke-" + std::to_string(k) + ".txt") << hookeResult.x(0) << ";" << hookeResult.x(1) << ";" << hookeResult.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+			
+			// Rosen
+			solution rosenResult = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
+			SAVE_TO_FILE("rosen-" + std::to_string(k) + ".txt") << rosenResult.x(0) << ";" << rosenResult.x(1) << ";" << rosenResult.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+			
+		}
+	}
+
+	//liczenie po iteracjach - jest to pierwszy obliczony przypadek z tab1, dla s = 0.2
+	s = 0.2;
+	sv(0) = s;
+	sv(1) = s;
+	matrix x(2, 1);
+	x(0) = 0, 2388;
+	x(1) = -0, 74822; 
+	solution hookeResult = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
+	solution::clear_calls();
+	solution rosenResult = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
+	solution::clear_calls();
+
 	
+	/*
 	for (int i = 0; i < 100; i++)
 	{
 		matrix x(2, 1);
@@ -184,17 +225,17 @@ void lab2()
 		solution result = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
 		if (abs(m2d(result.y)) < 0.01)
 		{
-			std::cout << result << "\n";
+			std::cout << "HJ " << result << "\n";
 		}
 		solution::clear_calls();
 
 		solution result2 = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
 		if (abs(m2d(result2.y)) < 0.01)
 		{
-			std::cout << result2 << "\n";
+			std::cout << "Rosen " << result2 << "\n";
 		}
 		solution::clear_calls();
-	}
+	}*/
 
 
 	// Prawdziwy przyklad czy cos
