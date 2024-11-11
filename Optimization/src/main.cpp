@@ -15,6 +15,7 @@ Data ostatniej modyfikacji: 19.09.2023
 #include "RandomNumberGenerator.h"
 #include "FileSaver.h"
 
+
 void lab0();
 void lab1();
 void lab2();
@@ -214,30 +215,6 @@ void lab2()
 	solution rosenResult = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
 	solution::clear_calls();
 
-	
-	/*
-	for (int i = 0; i < 100; i++)
-	{
-		matrix x(2, 1);
-		x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
-		x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
-
-		solution result = HJ(lab2_fun, x, s, alpha_1, epsilon, Nmax);
-		if (abs(m2d(result.y)) < 0.01)
-		{
-			std::cout << "HJ " << result << "\n";
-		}
-		solution::clear_calls();
-
-		solution result2 = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
-		if (abs(m2d(result2.y)) < 0.01)
-		{
-			std::cout << "Rosen " << result2 << "\n";
-		}
-		solution::clear_calls();
-	}*/
-
-
 	// Prawdziwy przyklad czy cos
 	matrix Y(2, 1);
 	Y(0) = 0;
@@ -258,6 +235,49 @@ void lab2()
 	//solution result3 = HJ(lab2_fun, x2, s, alpha_1, epsilon, Nmax);
 	//cout << result3 << endl;
 	//solution::clear_calls();
+
+	// Symulacja
+	{
+		matrix x_sim(2, 1);
+		x_sim(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+		x_sim(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
+		double s_sim = 0.4;
+		matrix sv_sim(2, 1);
+		sv_sim(0) = s_sim;
+		sv_sim(1) = s_sim;
+		double alpha1_sim = 0.5; // for HJ
+		double alpha2_sim = 1.3; // for Rosen
+		double beta_sim = 0.5; // for Rosen
+		double epsilon_sim = 1e20;
+		int Nmax_sim = 10000;
+		matrix ud1_sim(2, 1);
+		ud1(0) = M_PI;
+		ud1(1) = 0;
+
+		matrix k_sim(2, 1); // ud2 do symulacji
+		k_sim(0) = 3.0;
+		k_sim(1) = 3.0;
+
+		matrix y0(2, 1);
+		y0(0) = 0;
+		y0(1) = 1;
+
+		solution HJResult_sim = HJ(f2R, x_sim, s_sim, alpha1_sim, epsilon_sim, Nmax_sim, ud1_sim, k_sim);
+		std::cout << "Simulation HJ result: " << HJResult_sim;
+		solution::clear_calls();
+
+		solution RosenResult_sim = Rosen(f2R, x_sim, sv_sim, alpha2_sim, beta_sim, epsilon_sim, Nmax_sim, ud1_sim, k_sim);
+		std::cout << "Simulation Rosen result: " << RosenResult_sim;
+		solution::clear_calls();
+
+
+		matrix* simulationHooke = solve_ode(df2, 0, 0.1, 100, y0, ud1, HJResult_sim.x);
+		SAVE_TO_FILE("symHJ.txt") << simulationHooke[1];
+
+		matrix* simulationRosen = solve_ode(df2, 0, 0.1, 100, y0, ud1, RosenResult_sim.x);
+		SAVE_TO_FILE("symRosen.txt") << simulationRosen[1];
+	}
+
 }
 
 void lab3() {}
