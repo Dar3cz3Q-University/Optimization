@@ -370,7 +370,8 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 
 		matrix lambda(n, new double[n]{ 0.0 });
 		matrix p(n, new double[n] { 0.0 });
-		matrix XB = x0;
+		solution XB = x0;
+		solution XB2 = 0;
 
 		matrix s = s0;
 		double max_s = 0.0;
@@ -380,9 +381,13 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 		{
 			for (int j = 0; j < n; j++)
 			{
-				if (ff(XB + s(j) * base[j], ud1, ud2) < ff(XB, ud1, ud2)) // TODO: Rewrite function to use fit_fun
+				XB2 = XB.x + s(j) * base[j];
+				XB2.fit_fun(ff, ud1, ud2);
+				XB.fit_fun(ff, ud1, ud2);
+				//if (ff(XB + s(j) * base[j], ud1, ud2) < ff(XB, ud1, ud2)) // TODO: Rewrite function to use fit_fun
+				if (XB2.y < XB.y)
 				{
-					XB = XB + s(j) * base[j];
+					XB.x = XB.x + s(j) * base[j];
 					lambda(j) += s(j);
 					s(j) *= alpha;
 				}
@@ -394,7 +399,7 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 			}
 
 			i++;
-			Xopt.x = XB;
+			Xopt.x = XB.x;
 
 			bool changeBase = true;
 			for (int j = 0; j < n; j++)
