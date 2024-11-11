@@ -40,7 +40,7 @@ matrix df0(double t, matrix Y, matrix ud1, matrix ud2)
 matrix lab1_fun(matrix x, matrix ud1, matrix ud2)
 {
 	matrix fx(1, 1);
-	double y = -cos(0.1 * m2d(x)) * exp(-pow((0.1 * m2d(x) - 2 * 3.14), 2)) + 0.002 * pow(0.1 * m2d(x), 2);
+	double y = -cos(0.1 * m2d(x)) * exp(-pow((0.1 * m2d(x) - 2 * M_PI), 2)) + 0.002 * pow(0.1 * m2d(x), 2);
 	fx(0) = y;
 	return fx;
 }
@@ -73,13 +73,10 @@ matrix df1(double t, matrix Y, matrix ud1, matrix ud2)
 	return dY;
 }
 
-// Tylko Lagrange i Fib
-// Do wykresu uzyc x tego ktory wyliczymy w tej funkcji
-// Do 31 pazdziernika, jedna osoba oddaje sprawko. 
 matrix f1R(matrix x, matrix ud1, matrix ud2)
 {
-	matrix y(1,1);
-	matrix y0 = matrix(3, new double[3]{ 5, 1, 20 });
+	matrix y(1, 1);
+	matrix y0 = matrix(3, new double[3] { 5, 1, 20 });
 
 	matrix* y_ptr = solve_ode(df1, 0, 1, 2000, y0, ud1, x);
 
@@ -97,6 +94,15 @@ matrix f1R(matrix x, matrix ud1, matrix ud2)
 
 	y_ptr[0].~matrix();
 	y_ptr[1].~matrix();
+
+	return y;
+}
+
+matrix lab2_fun(matrix x, matrix ud1, matrix ud2)
+{
+	matrix y;
+
+	y = pow(x(0), 2) + pow(x(1), 2) - cos(2.5 * M_PI * x(0)) - cos(2.5 * M_PI * x(1)) + 2;
 
 	return y;
 }

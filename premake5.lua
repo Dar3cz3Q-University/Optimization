@@ -4,7 +4,8 @@ workspace "Optimization"
 
     configurations {
         "Debug",
-        "Release"
+        "Release",
+        "Report"
     }
 
     filter { "system:windows", "action:vs2022" }
@@ -14,5 +15,10 @@ workspace "Optimization"
         require "cmake"
 
     OutputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-    
+
+    group "Dependencies"
+        include "Dependencies/googletest/googletest/premake5.lua"
+    group ""
+
     include "Optimization/premake5.lua"
+    include "Optimization_Tests/premake5.lua"

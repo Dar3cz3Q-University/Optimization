@@ -1,0 +1,36 @@
+name: Tests
+run-name: Deploy by @${{ github.actor }}
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Install Clang
+      run: sudo apt-get install -y clang
+
+    - name: Generate Makefile with Premake5
+      run: |
+        chmod +x ./Scripts/Setup-Linux.sh
+        ./Scripts/Setup-Linux.sh
+
+    - name: Build binaries
+      run: |
+        make config=debug
+
+    - name: Run tests
+      run: |
+        ./Binaries/Debug-linux-x86_64/Optimization_Tests/Optimization_Tests
