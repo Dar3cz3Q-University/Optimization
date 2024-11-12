@@ -210,16 +210,13 @@ void lab2()
 	solution rosenResult = Rosen(lab2_fun, x, sv, alpha_2, beta, epsilon, Nmax);
 	solution::clear_calls();
 
+
 	// Symulacja
 	{
-		matrix x(2, 1);
-		x(0) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
-		x(1) = RandomNumberGenerator::Get().Double(-1.0, 1.0);
-
 		double alpha1 = 0.5; // for HJ
 		double alpha2 = 1.3; // for Rosen
 		double beta = 0.5; // for Rosen
-		double epsilon = 1e20;
+		double epsilon = 1e-6;
 		int Nmax = 10000;
 
 		double s = 0.4;
@@ -231,19 +228,19 @@ void lab2()
 		ud1(0) = M_PI;
 		ud1(1) = 0;
 
-		matrix ud2(2, 1);
-		ud2(0) = 3.0;
-		ud2(1) = 3.0;
+		matrix k(2, 1);
+		k(0) = 1.0;
+		k(1) = 1.0;
 
 		matrix y0(2, 1);
 		y0(0) = 0;
-		y0(1) = 1;
+		y0(1) = 0;
 
-		solution HJResult_sim = HJ(f2R, x, s, alpha1, epsilon, Nmax, ud1, ud2);
-		std::cout << "Simulation HJ result: " << HJResult_sim;
+		solution HJResult_sim = HJ(f2R, k, s, alpha1, epsilon, Nmax, ud1); // znajduje optymalne k1 k2 rozwiązanie funkcjonału Q(k1,k2)
+		std::cout << "Simulation HJ result: " << HJResult_sim; 
 		solution::clear_calls();
 
-		solution RosenResult_sim = Rosen(f2R, x, sv, alpha2, beta, epsilon, Nmax, ud1, ud2);
+		solution RosenResult_sim = Rosen(f2R, k, sv, alpha2, beta, epsilon, Nmax, ud1); // znajduje optymalne k1 k2 rozwiązanie funkcjonału Q(k1,k2)
 		std::cout << "Simulation Rosen result: " << RosenResult_sim;
 		solution::clear_calls();
 
