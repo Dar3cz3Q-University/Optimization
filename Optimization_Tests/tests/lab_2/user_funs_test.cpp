@@ -66,8 +66,8 @@ TEST(df2, handles_defined_values)
 	matrix result = df2(0, Y, ud1, k);
 
 	// Then
-	ASSERT_NEAR(result(0), 1.0, EPSILON);
-	ASSERT_NEAR(result(1), 1.91399, EPSILON);
+	EXPECT_NEAR(result(0), 1.0, EPSILON);
+	EXPECT_NEAR(result(1), 1.91399, EPSILON);
 }
 
 TEST(f2R, handles_defined_values)
@@ -83,7 +83,7 @@ TEST(f2R, handles_defined_values)
 	matrix result = f2R(k);
 
 	// Then
-	ASSERT_NEAR(m2d(result), 245.032, EPSILON);
+	EXPECT_NEAR(m2d(result), 245.032, EPSILON);
 }
 
 } // namespace lab_2
