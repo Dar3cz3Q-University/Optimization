@@ -106,3 +106,55 @@ matrix lab2_fun(matrix x, matrix ud1, matrix ud2)
 
 	return y;
 }
+
+matrix df2(double t, matrix Y, matrix ud1, matrix ud2)
+{
+	matrix dY(2, 1);
+
+	double alpha_t = Y(0);
+	double omega_t = Y(1);
+
+	double b = 0.5;
+	double mr = 1.0;
+	double mc = 5.0;
+	double l = 1.0;
+
+	double alpha_ref = ud1(0);
+	double omega_ref = ud1(1);
+	double k1 = ud2(0);
+	double k2 = ud2(1);
+
+	double I = 1.0 / 3.0 * mr * pow(l, 2) + mc * pow(l, 2);
+	double Mt = k1 * (alpha_ref - alpha_t) + k2 * (omega_ref - omega_t);
+
+	dY(0) = omega_t;
+	dY(1) = (Mt - b * omega_t) / I;
+
+	return dY;
+}
+
+matrix f2R(matrix x, matrix ud1, matrix ud2)
+{
+	matrix Y0(2, 1);
+	matrix Yref(2, new double[2]{ M_PI, 0 });
+	matrix* Y = solve_ode(df2, 0, 0.1, 100, Y0, Yref, x);
+
+	double y = 0.0;
+	int n = get_len(Y[0]);
+	for (int i = 0; i < n; i++)
+	{
+		y += 10 * pow(Yref(0) - Y[1](i, 0), 2) +
+			pow(Yref(1) - Y[1](i, 1), 2) +
+			pow(x(0) * (Yref(0) - Y[1](i, 0)) + x(1) * (Yref(1) - Y[1](i, 1)), 2);
+	}
+
+	y *= 0.1;
+
+	matrix result(1, 1);
+	result(0) = y;
+
+	Y[0].~matrix();
+	Y[1].~matrix();
+
+	return result;
+}

@@ -2,11 +2,10 @@
 #include "gtest/gtest.h"
 
 #include "optimization/user_funs.h"
+#include "optimization/solution.h"
 
 namespace lab_2
 {
-static const double EPSILON = 1e-10;
-
 struct Point
 {
 	double x1, x2, y;
@@ -15,6 +14,8 @@ struct Point
 TEST(lab2_fun, handles_defined_values)
 {
 	// Given
+	const double EPSILON = 1e-10;
+
 	Point points[] = {
 		{0.5, 0.5, 3.9142135623730954},
 		{1.0, 1.0, 3.9999999999999996},
@@ -43,4 +44,46 @@ TEST(lab2_fun, handles_defined_values)
 		EXPECT_NEAR(point.y, m2d(result), EPSILON);
 	}
 }
+
+TEST(df2, handles_defined_values)
+{
+	// Given
+	const double EPSILON = 1e-3;
+
+	matrix Y(2, 1);
+	Y(0) = 0;
+	Y(1) = 1;
+
+	matrix ud1(2, 1);
+	ud1(0) = M_PI;
+	ud1(1) = 0;
+
+	matrix k(2, 1);
+	k(0) = 5.0;
+	k(1) = 5.0;
+
+	// When
+	matrix result = df2(0, Y, ud1, k);
+
+	// Then
+	EXPECT_NEAR(result(0), 1.0, EPSILON);
+	EXPECT_NEAR(result(1), 1.91399, EPSILON);
+}
+
+TEST(f2R, handles_defined_values)
+{
+	// Given
+	const double EPSILON = 1e-3;
+
+	matrix k(2, 1);
+	k(0) = 5.0;
+	k(1) = 5.0;
+
+	// When
+	matrix result = f2R(k);
+
+	// Then
+	EXPECT_NEAR(m2d(result), 245.032, EPSILON);
+}
+
 } // namespace lab_2
