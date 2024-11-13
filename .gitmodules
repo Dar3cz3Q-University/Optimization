@@ -1,6 +1,3 @@
-[submodule "Vendor/premake-cmake"]
-	path = Vendor/premake-cmake
-	url = https://github.com/Jarod42/premake-cmake.git
 [submodule "Dependencies/googletest"]
 	path = Dependencies/googletest
 	url = https://github.com/Dar3cz3Q/googletest.git
