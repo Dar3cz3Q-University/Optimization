@@ -452,7 +452,24 @@ solution pen(matrix(*ff)(matrix, matrix, matrix), matrix x0, double c, double dc
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		int i = 0;
+		matrix x = x0;
+		solution y;
+
+		do
+		{
+			i++;
+
+			y.x = x0;
+			y.fit_fun(ff, ud1, c);
+			x = sym_NM(ff, x, 1.0, dc, 0.1, 1.0, 1.0, epsilon, Nmax).x; // TODO: Naprawic
+
+			c *= dc;
+
+			if (solution::f_calls > Nmax)
+				throw std::string("");
+
+		} while (abs(m2d(x0) - m2d(x)) > epsilon);
 
 		return Xopt;
 	}
@@ -467,7 +484,30 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		int n = 3;
+		matrix base(3, 3);
+		base(0, 0) = 1.0;
+		base(1, 1) = 1.0;
+		base(2, 2) = 1.0;
+
+		matrix p(3, 1);
+		p[0] = x0;
+		for (int i = 1; i < n; i++) //TODO: n to chyba liczba wymiarow
+			p[i] = p[0] + s * base(i);
+
+		double max_p;
+
+		do
+		{
+
+
+
+			max_p = 0.0;
+			for (int j = 0; j < n; j++)
+				if (abs(p(j)) > max_p)
+					max_p = abs(p(j));
+
+		} while (max_p > epsilon);
 
 		return Xopt;
 	}
