@@ -612,6 +612,9 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 				}
 			}
 
+			cout << "-----" << endl;
+			cout << p[0];
+
 			if (solution::f_calls > Nmax)
 			{
 				throw std::string("Przekroczono limit wywolan funkcji :)");
