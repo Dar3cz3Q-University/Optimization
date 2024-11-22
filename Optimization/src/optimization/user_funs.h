@@ -23,3 +23,7 @@ matrix lab2_fun(matrix, matrix = NAN, matrix = NAN);
 matrix df2(double, matrix, matrix, matrix);
 
 matrix f2R(matrix, matrix = NAN, matrix = NAN);
+
+matrix df3(double, matrix, matrix, matrix);
+
+matrix f3R(matrix, matrix = NAN, matrix = NAN);
