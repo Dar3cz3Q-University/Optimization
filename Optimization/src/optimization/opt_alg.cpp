@@ -502,8 +502,6 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 			p.push_back(newP); 
 		}
 
-		solution p_min;
-		solution p_max;
 		int max_index;
 		int min_index;
 		solution p_(matrix(2, 1, 0.0));
@@ -524,23 +522,21 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 
 			//POLECENIE: wyznacz p_min i p_max (min =/= max)
 			
-			p_min = p[0];
-			min_index = 0;
+			min_index = 0; 
 
-			p_max = p[1];
-			max_index = 1;
+			max_index = 0;
 			
 
 			for (int i = 0; i < n; i++)
 			{
-				if (p[i].y > p_max.y)
+				if (p[i].y > p[max_index].y)
 				{
-					p_max = p[i];
+					//p_max = p[i];
 					max_index = i;
 				}
-				if (p[i].y < p_min.y)
+				if (p[i].y < p[min_index].y)
 				{
-					p_min = p[i];
+					//p_min = p[i];
 					min_index = i;
 				}
 			}
@@ -548,21 +544,22 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 			//cout << "p_max " << p_max << endl;
 			//cout << "p_min " << p_min << endl;
 
-
+			//koniec polecenia
 
 			for (int i = 0; i < n; i++)
 			{
 				if (i != max_index)
 				{
-					p_.x = p_.x + p[i].x / n;
+					p_.x = p_.x + p[i].x;
 				}
 			}
+			p_.x = p_.x / n;
 
 
-			p_odb.x = p_.x + alpha * (p_.x - p_max.x);
+			p_odb.x = p_.x + alpha * (p_.x - p[max_index].x);
 			p_odb.fit_fun(ff, ud1, ud2);
 
-			if (p_odb.y < p_min.y)
+			if (p_odb.y < p[min_index].y)
 			{
 
 				p_e.x = p_.x + gamma * (p_odb.x - p_.x);
@@ -570,42 +567,47 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 
 				if (p_e.y < p_odb.y)
 				{
-					p_max = p_e;
-					p[max_index] = p_e;
+					//p_max = p_e;
+					p[max_index] = p_e; //?
 				}
 				else
 				{
-					p_max = p_odb;
-					p[max_index] = p_odb;
+					//p_max = p_odb;
+					p[max_index] = p_odb; //?
 				}
 			}
 			else
 			{
-				if (p_min.y <= p_odb.y && p_odb.y < p_max.y)
+				if (p[min_index].y <= p_odb.y && p_odb.y < p[max_index].y)
 				{
-					p_max = p_odb;
-					p[max_index] = p_odb;
+					p[max_index] = p_odb; //?
 				}
 				else
 				{
 
-					p_z.x = p_.x + beta * (p_max.x - p_.x);
+					p_z.x = p_.x + beta * (p[max_index].x - p_.x);
 					p_z.fit_fun(ff, ud1, ud2);
-					if (p_z.y >= p_max.y)
+					if (p_z.y >= p[max_index].y)
 					{
 						for (int i = 0; i < n; i++)
 						{
 							if (i != min_index)
 							{
-								p[i].x = delta * (p[i].x + p_min.x);
+								p[i].x = delta * (p[i].x + p[min_index].x);
+								p[i].fit_fun(ff, ud1, ud2);
 							}
 						}
 					}
+					else
+					{
+						p[max_index] = p_z;
+					}
 				}
 			}
-			for (int i = 0; i < n; i++)
+
+			for (int i = 0; i < n; i++) //?
 			{
-				double value = abs(m2d(p_min.y) - m2d(p[i].y));
+				double value = abs(m2d(p[min_index].y) - m2d(p[i].y));
 				if (value > max)
 				{
 					max = value;
@@ -618,7 +620,7 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 			}
 		} while (max > epsilon);
 
-		return p_min;
+		return p[min_index];
 	}
 	catch (string ex_info)
 	{

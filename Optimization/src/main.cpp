@@ -256,10 +256,10 @@ void lab3()
 	matrix x(2, 1);
 	x(0) = 1;
 	x(1) = 1;
-	double s = 1; 
-	double alpha = 1; 
+	double s = 0.5; 
+	double alpha = 1.0; 
 	double beta = 0.5; 
-	double gamma = 1;
+	double gamma = 1.5;
 	double delta = 0.9; 
 	double epsilon = 10e-4; 
 	int Nmax = 10000;

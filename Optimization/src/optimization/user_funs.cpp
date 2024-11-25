@@ -161,7 +161,7 @@ matrix f2R(matrix x, matrix ud1, matrix ud2)
 
 matrix lab3_fun_help(matrix x, matrix ud1, matrix ud2)
 {
-	return sin(M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2))) / (M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2)));
+	return	sin(M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2))) / (M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2)));
 }
 
 matrix lab3_fun_1(matrix x, matrix ud1, matrix ud2)
