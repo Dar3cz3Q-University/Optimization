@@ -451,25 +451,33 @@ solution pen(matrix(*ff)(matrix, matrix, matrix), matrix x0, double c, double dc
 {
 	try
 	{
-		solution Xopt;
-		int i = 0;
-		matrix x = x0;
-		solution y;
+		solution Xopt = x0;
+		solution F = x0;
+		double a = ud1(0);
 
+		double s = ud2(0);
+		double alpha = ud2(1);
+		double beta = ud2(2);
+		double gamma = ud2(3);
+		double delta = ud2(4);
 		do
 		{
-			i++;
-
-			y.x = x0;
-			y.fit_fun(ff, ud1, c);
-			x = sym_NM(ff, x, 1.0, dc, 0.1, 1.0, 1.0, epsilon, Nmax).x; // TODO: Naprawic
+			//wyznacz F_i(x) = f(x) + c_i * S(x)
+			F.x = x0;
+			F.fit_fun(ff, a, c); // przekazywane wspolczynnik do funkcji celu, otrzymany wynik to f(x) razy wspoczynnik kary c razy funkcja kary S(x)
+			//wyznacz x_i dla F_i startujac z x_i-1
+			//cout << "pen wywoluje sym_NM dla a " << a << " c " << c << endl;
+			Xopt = sym_NM(ff, F.x, s, alpha, beta, gamma, delta, epsilon, Nmax, a, c);
 
 			c *= dc;
 
 			if (solution::f_calls > Nmax)
-				throw std::string("");
+				throw std::string("Przekroczono limit wywolan funkcji :)");
 
-		} while (abs(m2d(x0) - m2d(x)) > epsilon);
+			cout << "norm " << norm(Xopt.x - F.x) << endl;
+			x0 = Xopt.x;
+
+		} while (norm(Xopt.x - F.x) > epsilon);
 
 		return Xopt;
 	}
@@ -519,8 +527,6 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 			{
 				p[i].fit_fun(ff, ud1, ud2);
 			}
-
-
 
 			//POLECENIE: wyznacz p_min i p_max (min =/= max)
 			
