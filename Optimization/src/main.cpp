@@ -253,14 +253,11 @@ void lab2()
 
 void lab3() 
 {
-	matrix x(2, 1);
-	x(0) = 1;
-	x(1) = 1;
 	double s = 0.5; 
 	double alpha = 1.0; 
 	double beta = 0.5; 
-	double gamma = 1.5;
-	double delta = 0.9; 
+	double gamma = 2.0;
+	double delta = 0.5; 
 	
 	matrix userData(5, 1);
 	userData(0) = s;
@@ -272,25 +269,40 @@ void lab3()
 	double epsilon = 10e-4;
 	int Nmax = 10000;
 
-	double c = 0.1;
-	double dc = 1.1;
-	double a = 5;
+	double c_inner = 10.0;
+	double dc_inner = 0.2;
 
-	//solution result = sym_NM(lab3_fun_help, x, s, alpha, beta, gamma, delta, epsilon, Nmax);
-	//cout << result;
-	//solution::clear_calls();
+	double c_outer = 1.0;
+	double dc_outer = 1.5;
 
-	
+	double a_tab[] = {
+		4.0,
+		4.4934,
+		5.0
+	};
 
-	cout << "Pen outside: " << endl;
-	solution penResultIn = pen(lab3_fun_outer, x, c, dc, epsilon, Nmax, a, userData);
-	cout << penResultIn;
-	solution::clear_calls();
+	for (double a : a_tab)
+	{
+		for (int i = 0; i < 1; i++)
+		{
+			matrix x(2, 1);
+			x(0) = RandomNumberGenerator::Get().Double(1.5, 5.5);
+			x(1) = RandomNumberGenerator::Get().Double(1.5, 5.5);
 
-	cout << "Pen inside: " << endl;
-	solution penResultOut = pen(lab3_fun_inner, x, c, dc, epsilon, Nmax, a, userData);
-	cout << penResultOut;
-	solution::clear_calls();
+			SAVE_TO_FILE("x-" + std::to_string(a) + ".txt") << x(0) << ";" << x(1) << "\n";
+
+			solution penResultOut = pen(lab3_fun_outer, x, c_outer, dc_outer, epsilon, Nmax, a, userData);
+			SAVE_TO_FILE("pen_result-outer-" + std::to_string(a) + ".txt") << penResultOut.x(0) << ";" << penResultOut.x(1) << ";" << penResultOut.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+
+			solution penResultIn = pen(lab3_fun_inner, x, c_inner, dc_inner, epsilon, Nmax, a, userData);
+			SAVE_TO_FILE("pen_result-inner-" + std::to_string(a) + ".txt") << penResultIn.x(0) << ";" << penResultIn.x(1) << ";" << penResultIn.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+		}
+	}
+
+	// Symulacja
+	// TODO: Wojcimierzu ugotuj :)
 }
 
 void lab4() {}
