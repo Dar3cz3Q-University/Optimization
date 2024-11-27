@@ -161,10 +161,10 @@ matrix f2R(matrix x, matrix ud1, matrix ud2)
 
 matrix lab3_fun_help(matrix x, matrix ud1, matrix ud2)
 {
-	return sin(M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2))) / (M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2)));
+	return	sin(M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2))) / (M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2)));
 }
 
-matrix lab3_fun_1(matrix x, matrix ud1, matrix ud2)
+matrix lab3_fun_outer(matrix x, matrix ud1, matrix ud2)
 {
 	matrix y = lab3_fun_help(x, ud1, ud2);
 
@@ -182,7 +182,7 @@ matrix lab3_fun_1(matrix x, matrix ud1, matrix ud2)
 	return y;
 }
 
-matrix lab3_fun_2(matrix x, matrix ud1, matrix ud2)
+matrix lab3_fun_inner(matrix x, matrix ud1, matrix ud2)
 {
 	matrix y = lab3_fun_help(x, ud1, ud2);
 

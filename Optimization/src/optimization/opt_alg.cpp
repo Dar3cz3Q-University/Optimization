@@ -451,25 +451,33 @@ solution pen(matrix(*ff)(matrix, matrix, matrix), matrix x0, double c, double dc
 {
 	try
 	{
-		solution Xopt;
-		int i = 0;
-		matrix x = x0;
-		solution y;
+		solution Xopt = x0;
+		solution F = x0;
+		double a = ud1(0);
 
+		double s = ud2(0);
+		double alpha = ud2(1);
+		double beta = ud2(2);
+		double gamma = ud2(3);
+		double delta = ud2(4);
 		do
 		{
-			i++;
-
-			y.x = x0;
-			y.fit_fun(ff, ud1, c);
-			x = sym_NM(ff, x, 1.0, dc, 0.1, 1.0, 1.0, epsilon, Nmax).x; // TODO: Naprawic
+			//wyznacz F_i(x) = f(x) + c_i * S(x)
+			F.x = x0;
+			F.fit_fun(ff, a, c); // przekazywane wspolczynnik do funkcji celu, otrzymany wynik to f(x) razy wspoczynnik kary c razy funkcja kary S(x)
+			//wyznacz x_i dla F_i startujac z x_i-1
+			//cout << "pen wywoluje sym_NM dla a " << a << " c " << c << endl;
+			Xopt = sym_NM(ff, F.x, s, alpha, beta, gamma, delta, epsilon, Nmax, a, c);
 
 			c *= dc;
 
 			if (solution::f_calls > Nmax)
-				throw std::string("");
+				throw std::string("Przekroczono limit wywolan funkcji :)");
 
-		} while (abs(m2d(x0) - m2d(x)) > epsilon);
+			cout << "norm " << norm(Xopt.x - F.x) << endl;
+			x0 = Xopt.x;
+
+		} while (norm(Xopt.x - F.x) > epsilon);
 
 		return Xopt;
 	}
@@ -490,26 +498,165 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 		base(1, 1) = 1.0;
 		base(2, 2) = 1.0;
 
-		matrix p(3, 1);
-		p[0] = x0;
+		std::vector<solution> p;
+		p.push_back(x0);
 		for (int i = 1; i < n; i++) //TODO: n to chyba liczba wymiarow
-			p[i] = p[0] + s * base(i);
+		{
+			//pewnie da sie to zrobic zwiezlej
+			double* coords = new double[2]();
+			coords[0] = p[0].x(0) + s * base(i, i);
+			coords[1] = p[0].x(1) + s * base(i, i);
+			solution newP(2, coords);
+			p.push_back(newP); 
+		}
 
-		double max_p;
+		int max_index;
+		int min_index;
+		solution p_(matrix(2, 1, 0.0));
+
+		solution p_odb;
+		solution p_z;
+		solution p_e;
+
+		double max = 0;
 
 		do
 		{
+			//POLECENIE: oblicz wartosci funkcji w wierzcholkach sympleksu p0 p1 .. pn
+			for (int i = 0; i < n; i++)
+			{
+				p[i].fit_fun(ff, ud1, ud2);
+			}
+
+			//POLECENIE: wyznacz p_min i p_max (min =/= max)
+			
+			min_index = 0; 
+
+			max_index = 0;
+			
+
+			for (int i = 0; i < n; i++)
+			{
+				if (p[i].y > p[max_index].y)
+				{
+					//p_max = p[i];
+					max_index = i;
+				}
+				if (p[i].y < p[min_index].y)
+				{
+					//p_min = p[i];
+					min_index = i;
+				}
+			}
 
 
+			//wypisanie simpleksu
+			/*
+			cout << "SIMPLEKS:" << endl;
+			for (int i = 0; i < 3; i++)
+			{
+				if (i == min_index)
+				{
+					cout << "MIN	";
+				}
+				else if (i == max_index)
+				{
+					cout << "MAX	";
+				}
+				else
+				{
+					cout << "	";
+				}
+				cout << " x1 " << p[i].x(0) << ", x2 " << p[i].x(1) << ", y " << p[i].y << endl;
+			}
+			*/
 
-			max_p = 0.0;
-			for (int j = 0; j < n; j++)
-				if (abs(p(j)) > max_p)
-					max_p = abs(p(j));
+			//cout << "p_max " << p_max << endl;
+			//cout << "p_min " << p_min << endl;
 
-		} while (max_p > epsilon);
+			//koniec polecenia
 
-		return Xopt;
+			for (int i = 0; i < n; i++)
+			{
+				if (i != max_index)
+				{
+					p_.x = p_.x + p[i].x;
+				}
+			}
+			p_.x = p_.x / n;
+
+
+			p_odb.x = p_.x + alpha * (p_.x - p[max_index].x);
+			p_odb.fit_fun(ff, ud1, ud2);
+
+			if (p_odb.y < p[min_index].y)
+			{
+
+				p_e.x = p_.x + gamma * (p_odb.x - p_.x);
+				p_e.fit_fun(ff, ud1, ud2);
+
+				if (p_e.y < p_odb.y)
+				{
+					//p_max = p_e;
+					p[max_index] = p_e; //?
+				}
+				else
+				{
+					//p_max = p_odb;
+					p[max_index] = p_odb; //?
+				}
+			}
+			else
+			{
+				if (p[min_index].y <= p_odb.y && p_odb.y < p[max_index].y)
+				{
+					p[max_index] = p_odb; //?
+				}
+				else
+				{
+
+					p_z.x = p_.x + beta * (p[max_index].x - p_.x);
+					p_z.fit_fun(ff, ud1, ud2);
+					if (p_z.y >= p[max_index].y)
+					{
+						for (int i = 0; i < n; i++)
+						{
+							if (i != min_index)
+							{
+								p[i].x = delta * (p[i].x + p[min_index].x);
+								p[i].fit_fun(ff, ud1, ud2);
+							}
+						}
+					}
+					else
+					{
+						p[max_index] = p_z;
+					}
+				}
+			}
+			max = 0;
+			//cout << "DIFFERENCES: ";
+			for (int i = 0; i < n; i++) //?
+			{
+				double value = abs(m2d(p[min_index].y) - m2d(p[i].y));
+				//cout << value << " ";
+				if (value > max)
+				{
+					//cout << "NEW MAX " << value << endl;
+					max = value;
+				}
+			}
+
+			//cout << endl << "MAX DIFF = " << max << endl;
+			//cout << "-----------" << endl;
+
+			if (solution::f_calls > Nmax)
+			{
+				throw std::string("Przekroczono limit wywolan funkcji :)");
+			}
+		} while (max > epsilon);
+
+		return p[min_index];
 	}
 	catch (string ex_info)
 	{
