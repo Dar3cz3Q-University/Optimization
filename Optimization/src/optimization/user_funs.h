@@ -26,6 +26,6 @@ matrix f2R(matrix, matrix = NAN, matrix = NAN);
 
 matrix lab3_fun_help(matrix, matrix, matrix);
 
-matrix lab3_fun_1(matrix, matrix, matrix);
+matrix lab3_fun_outer(matrix, matrix, matrix);
 
-matrix lab3_fun_2(matrix, matrix, matrix);
+matrix lab3_fun_inner(matrix, matrix, matrix);

@@ -261,15 +261,7 @@ void lab3()
 	double beta = 0.5; 
 	double gamma = 1.5;
 	double delta = 0.9; 
-	
-	matrix userData(5, 1);
-	userData(0) = s;
-	userData(1) = alpha;
-	userData(2) = beta;
-	userData(3) = gamma;
-	userData(4) = delta;
-
-	double epsilon = 10e-4;
+	double epsilon = 10e-4; 
 	int Nmax = 10000;
 
 	double c = 0.1;
@@ -280,7 +272,12 @@ void lab3()
 	//cout << result;
 	//solution::clear_calls();
 
-	
+	matrix userData(5, 1);
+	userData(0) = s;
+	userData(1) = alpha;
+	userData(2) = beta;
+	userData(3) = gamma;
+	userData(4) = delta;
 
 	cout << "Pen outside: " << endl;
 	solution penResultIn = pen(lab3_fun_outer, x, c, dc, epsilon, Nmax, a, userData);
