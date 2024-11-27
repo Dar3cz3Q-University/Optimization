@@ -520,6 +520,8 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 				p[i].fit_fun(ff, ud1, ud2);
 			}
 
+
+
 			//POLECENIE: wyznacz p_min i p_max (min =/= max)
 			
 			min_index = 0; 
@@ -540,6 +542,28 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 					min_index = i;
 				}
 			}
+
+
+			//wypisanie simpleksu
+			/*
+			cout << "SIMPLEKS:" << endl;
+			for (int i = 0; i < 3; i++)
+			{
+				if (i == min_index)
+				{
+					cout << "MIN	";
+				}
+				else if (i == max_index)
+				{
+					cout << "MAX	";
+				}
+				else
+				{
+					cout << "	";
+				}
+				cout << " x1 " << p[i].x(0) << ", x2 " << p[i].x(1) << ", y " << p[i].y << endl;
+			}
+			*/
 
 			//cout << "p_max " << p_max << endl;
 			//cout << "p_min " << p_min << endl;
@@ -604,15 +628,21 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 					}
 				}
 			}
-
+			max = 0;
+			//cout << "DIFFERENCES: ";
 			for (int i = 0; i < n; i++) //?
 			{
 				double value = abs(m2d(p[min_index].y) - m2d(p[i].y));
+				//cout << value << " ";
 				if (value > max)
 				{
+					//cout << "NEW MAX " << value << endl;
 					max = value;
 				}
 			}
+
+			//cout << endl << "MAX DIFF = " << max << endl;
+			//cout << "-----------" << endl;
 
 			if (solution::f_calls > Nmax)
 			{

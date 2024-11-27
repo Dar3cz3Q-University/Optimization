@@ -266,9 +266,10 @@ void lab3()
 
 
 	solution result = sym_NM(lab3_fun_help, x, s, alpha, beta, gamma, delta, epsilon, Nmax);
+	cout << result;
 	solution::clear_calls();
 
-	cout << result;
+	
 }
 
 void lab4() {}
