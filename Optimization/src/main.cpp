@@ -15,7 +15,6 @@ Data ostatniej modyfikacji: 19.09.2023
 #include "RandomNumberGenerator.h"
 #include "FileSaver.h"
 
-
 void lab0();
 void lab1();
 void lab2();
@@ -28,7 +27,7 @@ int main()
 {
 	try
 	{
-		lab2();
+		lab3();
 	}
 	catch (string EX_INFO)
 	{
@@ -252,8 +251,58 @@ void lab2()
 	}
 }
 
-void lab3() {
+void lab3() 
+{
+	double s = 0.5; 
+	double alpha = 1.0; 
+	double beta = 0.5; 
+	double gamma = 2.0;
+	double delta = 0.5; 
 	
+	matrix userData(5, 1);
+	userData(0) = s;
+	userData(1) = alpha;
+	userData(2) = beta;
+	userData(3) = gamma;
+	userData(4) = delta;
+
+	double epsilon = 10e-4;
+	int Nmax = 10000;
+
+	double c_inner = 10.0;
+	double dc_inner = 0.2;
+
+	double c_outer = 1.0;
+	double dc_outer = 1.5;
+
+	double a_tab[] = {
+		4.0,
+		4.4934,
+		5.0
+	};
+
+	for (double a : a_tab)
+	{
+		for (int i = 0; i < 1; i++)
+		{
+			matrix x(2, 1);
+			x(0) = RandomNumberGenerator::Get().Double(1.5, 5.5);
+			x(1) = RandomNumberGenerator::Get().Double(1.5, 5.5);
+
+			SAVE_TO_FILE("x-" + std::to_string(a) + ".txt") << x(0) << ";" << x(1) << "\n";
+
+			solution penResultOut = pen(lab3_fun_outer, x, c_outer, dc_outer, epsilon, Nmax, a, userData);
+			SAVE_TO_FILE("pen_result-outer-" + std::to_string(a) + ".txt") << penResultOut.x(0) << ";" << penResultOut.x(1) << ";" << penResultOut.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+
+			solution penResultIn = pen(lab3_fun_inner, x, c_inner, dc_inner, epsilon, Nmax, a, userData);
+			SAVE_TO_FILE("pen_result-inner-" + std::to_string(a) + ".txt") << penResultIn.x(0) << ";" << penResultIn.x(1) << ";" << penResultIn.y(0) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+		}
+	}
+
+	// Symulacja
+	// TODO: Wojcimierzu ugotuj :)
 }
 
 void lab4() {}
