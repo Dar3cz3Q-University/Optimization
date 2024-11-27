@@ -451,10 +451,34 @@ solution pen(matrix(*ff)(matrix, matrix, matrix), matrix x0, double c, double dc
 {
 	try
 	{
-		solution Xopt;
-		// Tu wpisz kod funkcji
+		solution XB;
+		XB.x = x0;
+		XB.fit_fun(ff, ud1, c);
 
-		return Xopt;
+		solution XT;
+		XT = XB;
+
+		double s = ud2(0);
+		double alpha = ud2(1);
+		double beta = ud2(2);
+		double gamma = ud2(3);
+		double delta = ud2(4);
+
+		while (true)
+		{
+			XT = sym_NM(ff, XB.x, s, alpha, beta, gamma, delta, epsilon, Nmax, ud1, c);
+			c *= dc;
+
+			if (solution::f_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji :)");
+
+			if (norm(XT.x - XB.x) < epsilon)
+				break;
+
+			XB = XT;
+		};
+
+		return XT;
 	}
 	catch (string ex_info)
 	{
@@ -467,9 +491,124 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		int n = 3;
+		matrix base(3, 3);
+		base(0, 0) = 1.0;
+		base(1, 1) = 1.0;
+		base(2, 2) = 1.0;
 
-		return Xopt;
+		std::vector<solution> p;
+		p.reserve(n);
+		p.push_back(x0);
+
+		for (int i = 1; i < n; i++)
+		{
+			double* coords = new double[2] {
+				p[0].x(0) + s * base(i, i),
+				p[0].x(1) + s * base(i, i)
+			};
+
+			solution newP(2, coords);
+			p.push_back(newP); 
+		}
+
+		int max_index{};
+		int min_index{};
+
+		solution p_(matrix(2, 1, 0.0));
+
+		solution p_odb;
+		solution p_z;
+		solution p_e;
+
+		double max = 0;
+
+		do
+		{
+			// POLECENIE: oblicz wartosci funkcji w wierzcholkach sympleksu p0 p1 .. pn
+			for (int i = 0; i < n; i++)
+				p[i].fit_fun(ff, ud1, ud2);
+
+			// POLECENIE: wyznacz p_min i p_max (min =/= max)
+			min_index = 0;
+			max_index = 0;
+			
+			for (int i = 0; i < n; i++)
+			{
+				if (p[i].y > p[max_index].y)
+					max_index = i;
+
+				if (p[i].y < p[min_index].y)
+					min_index = i;
+			}
+
+			// KONIEC POLECENIE
+
+			for (int i = 0; i < n; i++)
+				if (i != max_index)
+					p_.x = p_.x + p[i].x;
+
+			p_.x = p_.x / n;
+
+			p_odb.x = p_.x + alpha * (p_.x - p[max_index].x);
+			p_odb.fit_fun(ff, ud1, ud2);
+
+			if (p_odb.y < p[min_index].y)
+			{
+				p_e.x = p_.x + gamma * (p_odb.x - p_.x);
+				p_e.fit_fun(ff, ud1, ud2);
+
+				if (p_e.y < p_odb.y)
+					p[max_index] = p_e;
+				else
+					p[max_index] = p_odb;
+			}
+			else
+			{
+				if (p[min_index].y <= p_odb.y && p_odb.y < p[max_index].y)
+				{
+					p[max_index] = p_odb;
+				}
+				else
+				{
+					p_z.x = p_.x + beta * (p[max_index].x - p_.x);
+					p_z.fit_fun(ff, ud1, ud2);
+
+					if (p_z.y >= p[max_index].y)
+					{
+						for (int i = 0; i < n; i++)
+						{
+							if (i != min_index)
+							{
+								p[i].x = delta * (p[i].x + p[min_index].x);
+								p[i].fit_fun(ff, ud1, ud2);
+							}
+						}
+					}
+					else
+					{
+						p[max_index] = p_z;
+					}
+				}
+			}
+
+			max = 0;
+
+			for (int i = 0; i < n; i++)
+			{
+				double value = abs(m2d(p[min_index].y) - m2d(p[i].y));
+
+				if (value > max)
+					max = value;
+			}
+
+			if (solution::f_calls > Nmax)
+			{
+				throw std::string("Przekroczono limit wywolan funkcji :)");
+			}
+		} while (max > epsilon);
+
+		return p[min_index];
 	}
 	catch (string ex_info)
 	{
