@@ -281,9 +281,11 @@ void lab3()
 		5.0
 	};
 
+#if 0
+
 	for (double a : a_tab)
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			matrix x(2, 1);
 			x(0) = RandomNumberGenerator::Get().Double(1.5, 5.5);
@@ -301,8 +303,28 @@ void lab3()
 		}
 	}
 
+#endif
+
 	// Symulacja
-	// TODO: Wojcimierzu ugotuj :)
+
+	{
+		matrix x0(2, 1);
+		x0(0) = 5.0;
+		x0(1) = 10.0;
+
+		double c = 1.0;
+		double dc = 1.5;
+
+		solution optimal = pen(f3R, x0, c, dc, epsilon, Nmax, NULL, userData);
+		solution::clear_calls();
+
+		std::cout << optimal << "\n";
+
+		matrix Y0(4, new double[4] { 0.0, optimal.x(0), 100, 0 });
+		matrix* Y = solve_ode(df3, 0.0, 0.01, 7.0, Y0, NULL, optimal.x(1));
+
+		std::cout << hcat(Y[0], Y[1]);
+	}
 }
 
 void lab4() {}

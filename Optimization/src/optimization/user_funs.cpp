@@ -217,13 +217,13 @@ matrix df3(double t, matrix Y, matrix ud1, matrix ud2)
 	double omega = ud2(0);
 
 	double S = M_PI * pow(r, 2);
-	double Dx = 1 / 2 * C * rho * S * Y(1) * abs(Y(1));
-	double Dy = 1 / 2 * C * rho * S * Y(3) * abs(Y(3));
+	double Dx = 0.5 * C * rho * S * Y(1) * abs(Y(1));
+	double Dy = 0.5 * C * rho * S * Y(3) * abs(Y(3));
 	double Fmx = rho * Y(3) * omega * M_PI * pow(r, 3);
 	double Fmy = rho * Y(1) * omega * M_PI * pow(r, 3);
 
 	dY(0) = Y(1);
-	dY(1) = (-Fmx - Dx) / m;
+	dY(1) = (-Dx - Fmx) / m;
 	dY(2) = Y(3);
 	dY(3) = (-m * EARTH_ACCELERATION - Dy - Fmy) / m;
 
@@ -247,18 +247,18 @@ matrix f3R(matrix x, matrix ud1, matrix ud2)
 
 		if (abs(Y[1](i, 2)) < abs(Y[1](i0, 2)))
 			i0 = i;
-
-		result = -Y[1](i0, 0);
 	}
 
+	result = -Y[1](i0, 0);
+
 	if (abs(x(0)) - 10 > 0)
-		result = result + ud2(0) + pow(abs(x(0)) - 10, 2);//ud2 to c
+		result = result + ud2 * pow(abs(x(0)) - 10, 2); // ud2 to c
 
 	if (abs(x(1)) - 15 > 0)
-		result = result + ud2(0) + pow(abs(x(1)) - 15, 2);
+		result = result + ud2 * pow(abs(x(1)) - 15, 2);
 
 	if (abs(Y[1](i50, 0) - 5) - 0.5 > 0)
-		result = result + ud2(0) + pow(abs(Y[1](i50, 0) - 5) - 0.5, 2);
+		result = result + ud2 * pow(abs(Y[1](i50, 0) - 5) - 0.5, 2);
 
 	Y[0].~matrix();
 	Y[1].~matrix();
