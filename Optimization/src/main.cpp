@@ -330,7 +330,6 @@ void lab4()
 	cout << "hesjan \n";
 	cout << hesjan;
 	solution::clear_calls;
-
 }
 
 void lab5() {}
