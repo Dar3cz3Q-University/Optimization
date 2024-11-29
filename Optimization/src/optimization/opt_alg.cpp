@@ -616,12 +616,32 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 	}
 }
 
+// Gradient prosty
 solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		Xopt.x = x0;
+
+		solution X_prev;
+	
+		matrix d;
+
+		do
+		{
+			X_prev = Xopt;
+			Xopt.grad(gf, ud1, ud2);
+			d = -Xopt.g;
+
+			// Tutaj liczylibysmy h_i ale Michal mowi ze nie trzeba 
+
+			Xopt.x = X_prev.x + h0 * d;
+
+			if (solution::g_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji :(");
+
+		} while (norm(Xopt.x - X_prev.x) > epsilon);
 
 		return Xopt;
 	}
@@ -631,12 +651,37 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 	}
 }
 
+// Gradient sprzezony
 solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
+	// TODO: Dla h0 =< 0 krok zmienny a dla h0 > 0 krok staly
 	try
 	{
-		solution Xopt;
-		// Tu wpisz kod funkcji
+		solution Xopt = x0;
+		solution X_prev;
+
+		Xopt.grad(gf, ud1, ud2);
+
+		matrix d = -Xopt.g;
+
+		matrix di;
+
+		do
+		{
+			X_prev = Xopt;
+			d = di;
+
+			Xopt.grad(gf, ud1, ud2);
+			double beta = pow(norm(Xopt.g), 2) / pow(norm(X_prev.g), 2);
+
+			di = -Xopt.g + beta * d;
+
+			Xopt.x = X_prev.x + h0 * di;
+
+			if (solution::g_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji :(");
+
+		} while (norm(Xopt.x - X_prev.x) > epsilon);
 
 		return Xopt;
 	}
@@ -646,13 +691,35 @@ solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 	}
 }
 
+// Gradient z Hesjanem :)... kim jest ten Hesjan?
 solution Newton(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix),
 	matrix(*Hf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
 	try
 	{
-		solution Xopt;
-		// Tu wpisz kod funkcji
+		solution Xopt = x0;
+		solution X_prev;
+
+		matrix d;
+
+		do
+		{
+			X_prev = Xopt;
+
+			Xopt.hess(Hf, ud1, ud2);
+			Xopt.grad(gf, ud1, ud2);
+
+			d = -inv(Xopt.H) * Xopt.g;
+
+			Xopt.x = X_prev.x + h0 * d;
+
+			if (solution::H_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji hess() :(");
+
+			if (solution::g_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji grad() :(");
+
+		} while (norm(Xopt.x - X_prev.x) > epsilon);
 
 		return Xopt;
 	}

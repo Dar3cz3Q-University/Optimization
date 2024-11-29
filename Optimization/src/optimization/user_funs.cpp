@@ -205,3 +205,42 @@ matrix lab3_fun_inner(matrix x, matrix ud1, matrix ud2)
 
 	return y;
 }
+
+matrix lab4_fun(matrix x, matrix ud1, matrix ud2)
+{
+	return pow((x(0) + 2 * x(1) - 7), 2) + pow((2 * x(0) + x(1) - 5), 2);
+}
+
+matrix fT4(matrix x, matrix ud1, matrix ud2)
+{
+	matrix y;
+
+	if (isnan(ud2(0, 0)))
+		y = lab4_fun(x, ud1, ud2);
+	else
+		y = fT4(ud2[0] + x * ud2[1]);
+
+	return y;
+}
+
+matrix lab4_grad(matrix x, matrix ud1, matrix ud2)
+{
+	matrix y(2, 1);
+
+	y(0) = -34.0 + 10.0 * x(0) + 8.0 * x(1);
+	y(1) = -38.0 + 8.0 * x(0) + 10.0 * x(1);
+
+	return y;
+}
+
+matrix lab4_hes(matrix x, matrix ud1, matrix ud2)
+{
+	matrix y(2, 2);
+	
+	y(0, 0) = 10;
+	y(0, 1) = 8;
+	y(1, 0) = 8;
+	y(1, 1) = 10;
+
+	return y;
+}
