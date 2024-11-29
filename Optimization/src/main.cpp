@@ -305,7 +305,10 @@ void lab3()
 	// TODO: Wojcimierzu ugotuj :)
 }
 
-void lab4() {}
+void lab4() 
+{
+
+}
 
 void lab5() {}
 
