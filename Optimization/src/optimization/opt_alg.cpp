@@ -748,15 +748,23 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 	
 		matrix d;
 
+		double hi;
+
 		do
 		{
 			X_prev = Xopt;
 			Xopt.grad(gf, ud1, ud2);
 			d = -Xopt.g;
 
+			if (h0 <= 0)
+			{
+				//calculate new h;
+			}
+			else
+				hi = h0;
 			// Tutaj liczylibysmy h_i ale Michal mowi ze nie trzeba 
 
-			Xopt.x = X_prev.x + h0 * d;
+			Xopt.x = X_prev.x + hi * d;
 
 			if (solution::g_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji :(");
@@ -854,8 +862,32 @@ solution golden(matrix(*ff)(matrix, matrix, matrix), double a, double b, double 
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		double alpha = (sqrt(5)-1)/2;
+		solution c = b - alpha * (b - a);
+		solution d = a + alpha * (b - a); 
 
+		do {
+			cout << c;
+			c.fit_fun(ff, ud1, ud2);
+			d.fit_fun(ff, ud1, ud2);
+			if (c.y < d.y)
+			{
+				b = m2d(d.x);
+				d.x = c.x;
+				c.x = b - alpha * (b - a);
+			}
+			else
+			{
+				a = m2d(c.x);
+				c.x = d.x;
+				d.x = a + alpha * (b - a);
+			}
+			if (solution::H_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji golden :(");
+		} while (b - a < epsilon);
+
+		Xopt = (a + b) / 2;
+		cout << "Optymalny krok to " << Xopt.x << endl;
 		return Xopt;
 	}
 	catch (string ex_info)

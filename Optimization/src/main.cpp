@@ -338,20 +338,20 @@ void lab4()
 	double epsilon = 1e-8;
 	int Nmax = 10000;
 
-	solution simpleGrad = SD(lab4_fun, lab4_grad, x, h0, epsilon, Nmax);
+	solution simpleGrad = SD(fT4, lab4_grad, x, h0, epsilon, Nmax);
 	cout << "Simple grad \n";
 	cout << simpleGrad;
-	solution::clear_calls;
+	solution::clear_calls();
 
-	solution complexGrad = CG(lab4_fun, lab4_grad, x, h0, epsilon, Nmax);
+	solution complexGrad = CG(fT4, lab4_grad, x, h0, epsilon, Nmax);
 	cout << "Complex grad \n";
 	cout << complexGrad;
-	solution::clear_calls;
+	solution::clear_calls();
 
-	solution hesjan = Newton(lab4_fun, lab4_grad, lab4_hes, x, h0, epsilon, Nmax);
+	solution hesjan = Newton(fT4, lab4_grad, lab4_hes, x, h0, epsilon, Nmax);
 	cout << "hesjan \n";
 	cout << hesjan;
-	solution::clear_calls;
+	solution::clear_calls();
 }
 
 void lab5() {}
