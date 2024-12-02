@@ -488,6 +488,124 @@ solution pen(matrix(*ff)(matrix, matrix, matrix), matrix x0, double c, double dc
 
 solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alpha, double beta, double gamma, double delta, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
+#if 1
+	try
+	{
+		//Funkcja pomocnicza do znajdywania maksymum normy
+		auto max = [&](std::vector<solution> sim, int i_min) -> double
+			{
+				double result = 0.0;
+				for (int i = 0; i < sim.size(); ++i)
+				{
+					double normal = norm(sim[i_min].x - sim[i].x);
+					if (result < normal)
+						result = normal;
+				}
+				return result;
+			};
+
+		int n = get_len(x0);
+
+		//Tworzenie bazy ortogonalnej
+		matrix d = matrix(n, n);
+		for (int i = 0; i < n; ++i)
+			d(i, i) = 1.0;
+
+		//Tworzenie simplexu i uzupe³nianie go danymi
+		std::vector<solution> simplex;
+		simplex.resize(n + 1);
+		simplex[0].x = x0;
+		simplex[0].fit_fun(ff, ud1, ud2);
+		for (int i = 1; i < simplex.size(); ++i)
+		{
+			simplex[i].x = simplex[0].x + s * d[i - 1];
+			simplex[i].fit_fun(ff, ud1, ud2);
+		}
+
+		//Indeks najmniejszej wartoœci wierzcho³ka simplexu
+		int i_min{};
+		//Indeks najwiêkszej wartoœci wierzcho³ka simplexu
+		int i_max{};
+
+		while (max(simplex, i_min) >= epsilon)
+		{
+			//Wyznaczanie maksymalnego i minimalnego indeksu
+			i_min = 0;
+			i_max = 0;
+			for (int i = 1; i < simplex.size(); ++i)
+			{
+				if (simplex[i].y < simplex[i_min].y)
+					i_min = i;
+				if (simplex[i].y > simplex[i_max].y)
+					i_max = i;
+			}
+
+			//Wyznaczenie œrodka ciê¿koœci
+			matrix simplex_CoG{};
+			for (int i = 0; i < simplex.size(); ++i)
+			{
+				if (i == i_max)
+					continue;
+				simplex_CoG = simplex_CoG + simplex[i].x;
+			}
+			simplex_CoG = simplex_CoG / simplex.size();
+
+			//Obliczanie wartoœci funkcji odbitego simplexu
+			solution simplex_reflected{};
+			simplex_reflected.x = simplex_CoG + alpha * (simplex_CoG - simplex[i_max].x);
+			simplex_reflected.fit_fun(ff, ud1, ud2);
+
+			if (simplex_reflected.y < simplex[i_min].y)
+			{
+				//Obliczanie wartoœci funkcji powiêkszonego simplexu
+				solution simplex_expansion{};
+				simplex_expansion.x = simplex_CoG + gamma * (simplex_reflected.x - simplex_CoG);
+				simplex_expansion.fit_fun(ff, ud1, ud2);
+				if (simplex_expansion.y < simplex_reflected.y)
+					simplex[i_max] = simplex_expansion;
+				else
+					simplex[i_max] = simplex_reflected;
+			}
+			else
+			{
+				if (simplex[i_min].y <= simplex_reflected.y && simplex_reflected.y < simplex[i_max].y)
+					simplex[i_max] = simplex_reflected;
+				else
+				{
+					//Obliczanie wartoœci funkcji pomniejszonego simplexu
+					solution simplex_narrowed{};
+					simplex_narrowed.x = simplex_CoG + beta * (simplex[i_max].x - simplex_CoG);
+					simplex_narrowed.fit_fun(ff, ud1, ud2);
+					if (simplex_narrowed.y >= simplex[i_max].y)
+					{
+						for (int i = 0; i < simplex.size(); ++i)
+						{
+							if (i == i_min)
+								continue;
+							simplex[i].x = delta * (simplex[i].x + simplex[i_min].x);
+							simplex[i].fit_fun(ff, ud1, ud2);
+						}
+					}
+					else
+						simplex[i_max] = simplex_narrowed;
+				}
+			}
+
+			if (solution::f_calls > Nmax)
+			{
+				simplex[i_min].flag = 0;
+				throw std::string("Maximum amount of f_calls reached!");
+			}
+
+		}
+
+		return simplex[i_min];
+	}
+	catch (string ex_info)
+	{
+		throw ("solution sym_NM(...):\n" + ex_info);
+	}
+#else
 	try
 	{
 		solution Xopt;
@@ -503,13 +621,14 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 
 		for (int i = 1; i < n; i++)
 		{
-			double* coords = new double[2] {
-				p[0].x(0) + s * base(i, i),
-				p[0].x(1) + s * base(i, i)
-			};
+			double* coords = new double[2]
+				{
+					p[0].x(0) + s * base(i, i),
+						p[0].x(1) + s * base(i, i)
+				};
 
 			solution newP(2, coords);
-			p.push_back(newP); 
+			p.push_back(newP);
 		}
 
 		int max_index{};
@@ -532,7 +651,7 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 			// POLECENIE: wyznacz p_min i p_max (min =/= max)
 			min_index = 0;
 			max_index = 0;
-			
+
 			for (int i = 0; i < n; i++)
 			{
 				if (p[i].y > p[max_index].y)
@@ -609,11 +728,12 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 		} while (max > epsilon);
 
 		return p[min_index];
-	}
+		}
 	catch (string ex_info)
 	{
 		throw("solution sym_NM(...):\n" + ex_info);
 	}
+#endif
 }
 
 // Gradient prosty

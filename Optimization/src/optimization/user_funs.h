@@ -38,6 +38,10 @@ matrix lab3_fun_outer(matrix, matrix, matrix);
 
 matrix lab3_fun_inner(matrix, matrix, matrix);
 
+matrix df3(double, matrix, matrix, matrix);
+
+matrix f3R(matrix, matrix = NAN, matrix = NAN);
+
 // Lab 4
 
 matrix lab4_fun(matrix, matrix = NAN, matrix = NAN);
