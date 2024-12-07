@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <filesystem>
 #include <functional>
+#include <variant>
 
 #ifdef _WIN32
     #define _USE_MATH_DEFINES

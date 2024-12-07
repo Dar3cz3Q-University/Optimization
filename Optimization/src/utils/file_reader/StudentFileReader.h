@@ -5,6 +5,6 @@
 class StudentFileReader : public FileReader
 {
 public:
-	solution Read(const std::vector<std::filesystem::path> filePaths);
+	RETURN_TYPE Read(const std::vector<std::filesystem::path> filePaths);
 };
 

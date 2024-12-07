@@ -331,33 +331,36 @@ void lab3()
 
 void lab4() 
 {
-	//// Dopisac testy
-	//matrix x(2, 1);
-	//x(0) = 5;
-	//x(1) = 2;
+	matrix x0(2, 1);
+	x0(0) = 5;
+	x0(1) = 2;
 
-	//double h0 = .05;
-	//double epsilon = 1e-8;
-	//int Nmax = 10000;
+	double h0 = .05;
+	double epsilon = 1e-8;
+	int nmax = 10000;
 
-	//solution simpleGrad = SD(fT4, lab4_grad, x, h0, epsilon, Nmax);
-	//cout << "Simple grad \n";
-	//cout << simpleGrad;
-	//solution::clear_calls();
+	solution simplegrad = SD(fT4, lab4_grad, x0, h0, epsilon, nmax);
+	cout << "simple grad \n";
+	cout << simplegrad;
+	solution::clear_calls();
 
-	//solution complexGrad = CG(fT4, lab4_grad, x, h0, epsilon, Nmax);
-	//cout << "Complex grad \n";
-	//cout << complexGrad;
-	//solution::clear_calls();
+	solution complexgrad = CG(fT4, lab4_grad, x0, h0, epsilon, nmax);
+	cout << "complex grad \n";
+	cout << complexgrad;
+	solution::clear_calls();
 
-	//solution hesjan = Newton(fT4, lab4_grad, lab4_hes, x, h0, epsilon, Nmax);
-	//cout << "hesjan \n";
-	//cout << hesjan;
-	//solution::clear_calls();
+	solution hesjan = Newton(fT4, lab4_grad, lab4_hes, x0, h0, epsilon, nmax);
+	cout << "hesjan \n";
+	cout << hesjan;
+	solution::clear_calls();
 
-	FileReaderFactory fileFactory; 
-	unique_ptr<FileReader> reader = fileFactory.CreateFileReader(FileTypeEnum::Lab4);
-	reader->Read(vector<filesystem::path>{"../Input/Project 4/XData.txt"});
+	auto fileReader = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab4);
+	auto data = fileReader->Read(vector<filesystem::path>{"../Input/Project 4/XData.txt", "../Input/Project 4/YData.txt"});
+
+	auto& [x, y] = get<pair<matrix, matrix>>(data);
+
+	cout << x << "\n";
+	cout << y << "\n";
 }
 
 void lab5() {}
