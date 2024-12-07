@@ -33,4 +33,5 @@ jobs:
 
     - name: Run tests
       run: |
-        ./Binaries/Debug-linux-x86_64/Optimization_Tests/Optimization_Tests
+        cd Binaries/Debug-linux-x86_64/Optimization_Tests
+        ./Optimization_Tests

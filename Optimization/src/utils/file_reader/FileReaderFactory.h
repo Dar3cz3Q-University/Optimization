@@ -1,6 +1,6 @@
 #pragma once
 
-#include "StudentFileReader.h"
+#include "Lab4_FileReader.h"
 #include "FileTypeEnum.h"
 
 class FileReaderFactory

@@ -18,6 +18,7 @@ project "Optimization"
        "src/optimization",
        "src/utils",
        "src/utils/file_reader",
+       "src/utils/file_reader/read_data_types",
    }
 
    filter "system:windows"

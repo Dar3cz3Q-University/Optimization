@@ -787,7 +787,6 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 // Gradient sprzezony
 solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
-	// TODO: Dla h0 =< 0 krok zmienny a dla h0 > 0 krok staly
 	try
 	{
 		solution Xopt = x0;

@@ -51,3 +51,9 @@ matrix fT4(matrix, matrix = NAN, matrix = NAN);
 matrix lab4_grad(matrix, matrix = NAN, matrix = NAN);
 
 matrix lab4_hes(matrix, matrix = NAN, matrix = NAN);
+
+double sigmoid(matrix, matrix);
+
+matrix cost_function(matrix, matrix = NAN, matrix = NAN);
+
+matrix cost_function_grad(matrix, matrix = NAN, matrix = NAN);
