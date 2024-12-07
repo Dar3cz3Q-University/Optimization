@@ -15,7 +15,7 @@ Data ostatniej modyfikacji: 19.09.2023
 #include "RandomNumberGenerator.h"
 #include "FileSaver.h"
 #include "FileReaderFactory.h"
-#include "StudentFileReader.h"
+#include "Lab4_FileReader.h"
 
 void lab0();
 void lab1();
@@ -329,38 +329,60 @@ void lab3()
 	}
 }
 
-void lab4() 
+void lab4()
 {
 	matrix x0(2, 1);
 	x0(0) = 5;
 	x0(1) = 2;
 
-	double h0 = 0.0;
 	double epsilon = 1e-8;
 	int nmax = 10000;
+	double hi[] = { 0.05, 0.12, 0.0 };
 
-	solution simplegrad = SD(fT4, lab4_grad, x0, h0, epsilon, nmax);
-	cout << "simple grad \n";
-	cout << simplegrad;
-	solution::clear_calls();
+	for (auto h : hi)
+	{
+		cout << "\nh: " << h << "\n\n";
 
-	solution complexgrad = CG(fT4, lab4_grad, x0, h0, epsilon, nmax);
-	cout << "complex grad \n";
-	cout << complexgrad;
-	solution::clear_calls();
+		// Dla kroku 0.12 wychodzi -inf. Testowalem dla roznych x i h i z tego co widze to zawsze jak h > 0.11 to wywala inf
+		solution simplegrad = SD(fT4, lab4_grad, x0, h, epsilon, nmax);
+		cout << "simple grad \n";
+		cout << simplegrad << "\n";
+		solution::clear_calls();
 
-	solution hesjan = Newton(fT4, lab4_grad, lab4_hes, x0, h0, epsilon, nmax);
-	cout << "hesjan \n";
-	cout << hesjan;
-	solution::clear_calls();
+		solution complexgrad = CG(fT4, lab4_grad, x0, h, epsilon, nmax);
+		cout << "complex grad \n";
+		cout << complexgrad << "\n";
+		solution::clear_calls();
 
-	auto fileReader = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab4);
-	auto data = fileReader->Read(vector<filesystem::path>{"../Input/Project 4/XData.txt", "../Input/Project 4/YData.txt"});
+		solution newton = Newton(fT4, lab4_grad, lab4_hes, x0, h, epsilon, nmax);
+		cout << "Newton \n";
+		cout << newton << "\n";
+		solution::clear_calls();
+	}
 
-	auto& [x, y] = get<pair<matrix, matrix>>(data);
+	auto dataPtr = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab4)->Read(
+		vector<filesystem::path>{
+			"../Input/Project 4/XData.txt",
+			"../Input/Project 4/YData.txt"
+		}
+	);
+	Lab4_DataType* data = dynamic_cast<Lab4_DataType*>(dataPtr.get());
 
-	cout << x << "\n";
-	cout << y << "\n";
+	{
+		cout << "Now the real problem :)\n";
+		double hi[] = { 1e-2, 1e-3, 1e-4 };
+		double epsilon = 1e-2;
+		matrix tetha(3, new double[] { 0, 0, 0 });
+
+		for (auto h : hi)
+		{
+			cout << "\nh: " << h << "\n\n";
+
+			solution result = CG(cost_function, cost_function_grad, tetha, h, epsilon, nmax, data->x, data->y);
+			cout << result << "\n";
+			solution::clear_calls();
+		}
+	}
 }
 
 void lab5() {}

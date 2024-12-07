@@ -27,7 +27,9 @@ project "Optimization_Tests"
 
     "../Optimization/src",
     "../Optimization/src/optimization",
-    "../Optimization/src/utils"
+    "../Optimization/src/utils",
+    "../Optimization/src/utils/file_reader",
+    "../Optimization/src/utils/file_reader/read_data_types"
    }
 
    links {

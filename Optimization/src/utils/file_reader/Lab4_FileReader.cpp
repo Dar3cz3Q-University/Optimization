@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "StudentFileReader.h"
+#include "Lab4_FileReader.h"
 
-RETURN_TYPE StudentFileReader::Read(const vector<filesystem::path> filePaths)
+unique_ptr<DataType> Lab4_FileReader::Read(const vector<filesystem::path> filePaths)
 {
 	constexpr int m = 100; // W konspekcie napisane jest, ze danych jest m = 100
 
@@ -44,5 +44,9 @@ RETURN_TYPE StudentFileReader::Read(const vector<filesystem::path> filePaths)
 
 	yDataFile.close();
 
-	return make_pair(x, y);
+	unique_ptr<Lab4_DataType> finalData = make_unique<Lab4_DataType>();
+	finalData->x = x;
+	finalData->y = y;
+
+	return finalData;
 }
