@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <ctime>
 #include <unordered_map>
+#include <filesystem>
+#include <functional>
 
 #ifdef _WIN32
     #define _USE_MATH_DEFINES

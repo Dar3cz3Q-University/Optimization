@@ -16,7 +16,8 @@ project "Optimization"
    includedirs {
        "src",
        "src/optimization",
-       "src/utils"
+       "src/utils",
+       "src/utils/file_reader",
    }
 
    filter "system:windows"

@@ -759,6 +759,7 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 			if (h0 <= 0)
 			{
 				//calculate new h;
+				solution::f_calls = 0;
 			}
 			else
 				hi = h0;
@@ -882,8 +883,10 @@ solution golden(matrix(*ff)(matrix, matrix, matrix), double a, double b, double 
 				c.x = d.x;
 				d.x = a + alpha * (b - a);
 			}
-			if (solution::H_calls > Nmax)
+
+			if (solution::f_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji golden :(");
+
 		} while (b - a < epsilon);
 
 		Xopt = (a + b) / 2;
