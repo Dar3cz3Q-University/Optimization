@@ -754,9 +754,20 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 			Xopt.grad(gf, ud1, ud2);
 			d = -Xopt.g;
 
-			// Tutaj liczylibysmy h_i ale Michal mowi ze nie trzeba 
-
-			Xopt.x = X_prev.x + h0 * d;
+			if (h0 <= 0)
+			{
+				matrix h_fun_data(2, 2);
+				h_fun_data.set_col(X_prev.x, 0);
+				h_fun_data.set_col(d, 1);
+				solution h_sol = golden(ff, 0, 1, epsilon, Nmax, ud1, h_fun_data);
+				solution::f_calls = 0;
+				matrix h = h_sol.x;
+				Xopt.x = X_prev.x + h * d;
+			}
+			else
+			{
+				Xopt.x = X_prev.x + h0 * d;
+			}
 
 			if (solution::g_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji :(");
@@ -796,7 +807,20 @@ solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 
 			di = -Xopt.g + beta * d;
 
-			Xopt.x = X_prev.x + h0 * di;
+			if (h0 <= 0)
+			{
+				matrix h_fun_data(2, 2);
+				h_fun_data.set_col(X_prev.x, 0);
+				h_fun_data.set_col(di, 1);
+				solution h_sol = golden(ff, 0, 1, epsilon, Nmax, ud1, h_fun_data);
+				solution::f_calls = 0;
+				matrix h = h_sol.x;
+				Xopt.x = X_prev.x + h * di;
+			}
+			else
+			{
+				Xopt.x = X_prev.x + h0 * di;
+			}
 
 			if (solution::g_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji :(");
@@ -811,7 +835,7 @@ solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 	}
 }
 
-// Gradient z Hesjanem :)... kim jest ten Hesjan?
+// Gradient z Hesjanem
 solution Newton(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix),
 	matrix(*Hf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
@@ -831,7 +855,20 @@ solution Newton(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix,
 
 			d = -inv(Xopt.H) * Xopt.g;
 
-			Xopt.x = X_prev.x + h0 * d;
+			if (h0 <= 0)
+			{
+				matrix h_fun_data(2, 2);
+				h_fun_data.set_col(X_prev.x, 0);
+				h_fun_data.set_col(d, 1);
+				solution h_sol = golden(ff, 0, 1, epsilon, Nmax, ud1, h_fun_data);
+				solution::f_calls = 0;
+				matrix h = h_sol.x;
+				Xopt.x = X_prev.x + h * d;
+			}
+			else
+			{
+				Xopt.x = X_prev.x + h0 * d;
+			}
 
 			if (solution::H_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji hess() :(");
@@ -854,8 +891,40 @@ solution golden(matrix(*ff)(matrix, matrix, matrix), double a, double b, double 
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
 
+		double alpha = (sqrt(5.0) - 1.0) / 2.0;
+		
+		double c0 = b - alpha * (b - a);
+		double d0 = a + alpha * (b - a); 
+
+		do {
+			solution c;
+			c.x = c0;
+			c.fit_fun(ff, ud1, ud2);
+			
+			solution d;
+			d.x = d0;
+			d.fit_fun(ff, ud1, ud2);
+			
+			if (c.y < d.y)
+			{
+				b = d0;
+				d0 = c0;
+				c0 = b - alpha * (b - a);
+			}
+			else
+			{
+				c0 = d0;
+				a = c0;
+				d0 = a + alpha * (b - a);
+			}
+
+			if (solution::f_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji golden :(");
+
+		} while (b - a > epsilon);
+
+		Xopt = (a + b) / 2;
 		return Xopt;
 	}
 	catch (string ex_info)

@@ -276,9 +276,14 @@ matrix fT4(matrix x, matrix ud1, matrix ud2)
 	matrix y;
 
 	if (isnan(ud2(0, 0)))
+	{
 		y = lab4_fun(x, ud1, ud2);
+	}	
 	else
+	{
 		y = fT4(ud2[0] + x * ud2[1]);
+	}
+		
 
 	return y;
 }
