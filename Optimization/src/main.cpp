@@ -335,7 +335,7 @@ void lab4()
 	x0(0) = 5;
 	x0(1) = 2;
 
-	double h0 = .05;
+	double h0 = 0.0;
 	double epsilon = 1e-8;
 	int nmax = 10000;
 
