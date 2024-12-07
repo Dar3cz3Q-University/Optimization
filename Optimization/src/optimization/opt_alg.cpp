@@ -748,6 +748,8 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 	
 		matrix d;
 
+		double hi;
+
 		do
 		{
 			X_prev = Xopt;
