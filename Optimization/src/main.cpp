@@ -343,7 +343,6 @@ void lab4()
 	{
 		cout << "\nh: " << h << "\n\n";
 
-		// Dla kroku 0.12 wychodzi -inf. Testowalem dla roznych x i h i z tego co widze to zawsze jak h > 0.11 to wywala inf
 		solution simplegrad = SD(fT4, lab4_grad, x0, h, epsilon, nmax);
 		cout << "simple grad \n";
 		cout << simplegrad << "\n";
@@ -360,6 +359,10 @@ void lab4()
 		solution::clear_calls();
 	}
 
+	//
+	// Real problem
+	//
+
 	auto dataPtr = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab4)->Read(
 		vector<filesystem::path>{
 			"../Input/Project 4/XData.txt",
@@ -370,17 +373,25 @@ void lab4()
 
 	{
 		cout << "Now the real problem :)\n";
-		double hi[] = { 1e-2, 1e-3, 1e-4 };
-		double epsilon = 1e-2;
-		matrix tetha(3, new double[] { 0, 0, 0 });
+		double hi[] = { 1e-4, 1e-3 };
+		double epsilon = 1e-4;
+		matrix theta(3, new double[] { 0, 0, 0 });
 
 		for (auto h : hi)
 		{
-			cout << "\nh: " << h << "\n\n";
-
-			solution result = CG(cost_function, cost_function_grad, tetha, h, epsilon, nmax, data->x, data->y);
+			cout << "\nh: " << h << "\n";
+			solution result = CG(cost_function, cost_function_grad, theta, h, epsilon, nmax, data->x, data->y);
 			cout << result << "\n";
 			solution::clear_calls();
+
+			int p = 0;
+			for (int i = 0; i < 100; i++)
+			{
+				matrix x = get_row(data->x, i);
+				double pi = round(sigmoid(result.x, trans(x)));
+				p += (pi == data->y(i) ? 1 : 0);
+			}
+			cout << "P(0*) = " << p << "\n";
 		}
 	}
 }
