@@ -771,11 +771,13 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 				Xopt.x = X_prev.x + h0 * d;
 			}
 
+			//cout << Xopt.x << endl;
 			if (solution::g_calls > Nmax)
-				throw std::string("Przekroczono limit wywolan funkcji :(");
+				throw std::string("Przekroczono limit wywolan funkcji grad() :(");
 
 		} while (norm(Xopt.x - X_prev.x) > epsilon);
 
+		Xopt.fit_fun(ff, ud1, ud2);
 		return Xopt;
 	}
 	catch (string ex_info)
@@ -822,12 +824,12 @@ solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 			{
 				Xopt.x = X_prev.x + h0 * di;
 			}
-
 			if (solution::g_calls > Nmax)
-				throw std::string("Przekroczono limit wywolan funkcji :(");
+				throw std::string("Przekroczono limit wywolan funkcji grad() :(");
 
 		} while (norm(Xopt.x - X_prev.x) > epsilon);
 
+		Xopt.fit_fun(ff, ud1, ud2);
 		return Xopt;
 	}
 	catch (string ex_info)
@@ -879,6 +881,7 @@ solution Newton(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix,
 
 		} while (norm(Xopt.x - X_prev.x) > epsilon);
 
+		Xopt.fit_fun(ff, ud1, ud2);
 		return Xopt;
 	}
 	catch (string ex_info)

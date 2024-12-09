@@ -368,9 +368,14 @@ void lab4()
 	);
 	Lab4_DataType* data = dynamic_cast<Lab4_DataType*>(dataPtr.get());
 
+	matrix theta(3, new double[] { 0, 0, 0 });
+	cout << "Dla theta = [0, 0, 0]";
+	cout << "J(theta) = " << cost_function(theta, data->x, data->y) << endl;
+	cout << "grad J(theta) = " << cost_function_grad(theta, data->x, data->y) << endl;
+
 	{
 		cout << "Now the real problem :)\n";
-		double hi[] = { 1e-2, 1e-3, 1e-4 };
+		double hi[] = { 1e-4, 1e-3, 1e-2 };
 		double epsilon = 1e-2;
 		matrix tetha(3, new double[] { 0, 0, 0 });
 

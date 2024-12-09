@@ -319,19 +319,19 @@ double sigmoid(matrix tetha, matrix x)
 matrix cost_function(matrix tetha, matrix ud1, matrix ud2)
 {
 	constexpr int m = 100;
-	double coef = -1.0 / m;
 
 	double sum = 0.0;
 	for (int i = 0; i < m; i++)
 		sum += ud2(i) * log(sigmoid(tetha, trans(get_row(ud1, i)))) + (1 - ud2(i)) * log(1 - sigmoid(tetha, trans(get_row(ud1, i))));
 
-	return coef * sum;
+	sum = sum * -1.0 / m;
+	
+	return sum;
 }
 
 matrix cost_function_grad(matrix tetha, matrix ud1, matrix ud2)
 {
 	constexpr int m = 100;
-	double coef = 1.0 / m;
 
 	constexpr int n = 3;
 
@@ -343,7 +343,7 @@ matrix cost_function_grad(matrix tetha, matrix ud1, matrix ud2)
 		for (int i = 0; i < m; i++)
 			sum += (sigmoid(tetha, trans(get_row(ud1, i))) - ud2(i)) * ud1(i, j);
 
-		result(j) = sum * coef;
+		result(j) = sum * 1.0 / m;;
 	}
 
 	return result;
