@@ -771,7 +771,10 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 				Xopt.x = X_prev.x + h0 * d;
 			}
 
+#if 1
 			//cout << Xopt.x << endl;
+			SAVE_TO_FILE("SD-x_1-x_2-" + std::to_string(h0) + ".txt") << Xopt.x(0) << ";" << Xopt.x(1) << "\n";
+#endif
 			if (solution::g_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji grad() :(");
 
@@ -812,6 +815,7 @@ solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 
 			if (h0 <= 0)
 			{
+				//zmiennokrokowa
 				matrix h_fun_data(2, 2);
 				h_fun_data.set_col(X_prev.x, 0);
 				h_fun_data.set_col(di, 1);
@@ -822,8 +826,14 @@ solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 			}
 			else
 			{
+				//stalokrokowa
 				Xopt.x = X_prev.x + h0 * di;
 			}
+			// wypisywanie 
+#if 1
+			//cout << Xopt.x << endl;
+			SAVE_TO_FILE("CG-x_1-x_2-" + std::to_string(h0) + ".txt") << Xopt.x(0) << ";" << Xopt.x(1) << "\n";
+#endif
 			if (solution::g_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji grad() :(");
 
@@ -872,7 +882,10 @@ solution Newton(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix,
 			{
 				Xopt.x = X_prev.x + h0 * d;
 			}
-
+#if 1
+			//cout << Xopt.x << endl;
+			SAVE_TO_FILE("Newton-x_1-x_2-" + std::to_string(h0) + ".txt") << Xopt.x(0) << ";" << Xopt.x(1) << "\n";
+#endif
 			if (solution::H_calls > Nmax)
 				throw std::string("Przekroczono limit wywolan funkcji hess() :(");
 

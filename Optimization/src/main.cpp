@@ -50,7 +50,7 @@ void lab0()
 	a(0) = -1;
 	a(1) = 2;
 	opt = MC(ff0T, 2, lb, ub, epsilon, Nmax, a);
-	cout << opt << endl << endl;
+	std::cout << opt << endl << endl;
 	solution::clear_calls();
 
 	// Wahadlo
@@ -60,7 +60,7 @@ void lab0()
 	ub = 5;
 	double teta_opt = 1;
 	opt = MC(ff0R, 1, lb, ub, epsilon, Nmax, teta_opt);
-	cout << opt << endl << endl;
+	std::cout << opt << endl << endl;
 	solution::clear_calls();
 
 	// Zapis symulacji do pliku csv
@@ -283,7 +283,7 @@ void lab3()
 		5.0
 	};
 
-#if 0
+#if 1
 
 	for (double a : a_tab)
 	{
@@ -332,34 +332,65 @@ void lab3()
 void lab4()
 {
 	matrix x0(2, 1);
-	x0(0) = 5;
-	x0(1) = 2;
+	/*x0(0) = 5;
+	x0(1) = 2;*/
 
 	double epsilon = 1e-8;
 	int nmax = 10000;
-	double hi[] = { 0.05, 0.12, 0.0 };
+	double hi[] = { 0.05, 0.12, 0.0 }; // długości kroku
 
+	// 100 optow dla kazdej dlugosci kroku, kazdej metody losowy punkt
+	// saving macro: 	SAVE_TO_FILE("x-" + std::to_string(a) + ".txt") << x(0) << ";" << x(1) << "\n";
+#if 0
 	for (auto h : hi)
 	{
-		cout << "\nh: " << h << "\n\n";
+		std::cout << "\nh: " << h << "\n\n";
+		for (int i = 0; i < 100; i++) {
+			x0(0) = RandomNumberGenerator::Get().Double(-10, 10);
+			x0(1) = RandomNumberGenerator::Get().Double(-10, 10);
+			SAVE_TO_FILE("x-" + std::to_string(h) + ".txt") << x0(0) << ";" << x0(1) << "\n";
 
-		// Dla kroku 0.12 wychodzi -inf. Testowalem dla roznych x i h i z tego co widze to zawsze jak h > 0.11 to wywala inf
-		solution simplegrad = SD(fT4, lab4_grad, x0, h, epsilon, nmax);
-		cout << "simple grad \n";
-		cout << simplegrad << "\n";
-		solution::clear_calls();
+			// Dla kroku 0.12 wychodzi -inf. Testowalem dla roznych x i h i z tego co widze to zawsze jak h > 0.11 to wywala inf
+			solution simplegrad = SD(fT4, lab4_grad, x0, h, epsilon, nmax);
+			SAVE_TO_FILE("SD-" + std::to_string(h) + ".txt") << simplegrad.x(0) << ";" << simplegrad.x(1) << ";" << simplegrad.y(0) << ";" << solution::f_calls << ";" << solution::g_calls << "\n";
+			solution::clear_calls();
 
-		solution complexgrad = CG(fT4, lab4_grad, x0, h, epsilon, nmax);
-		cout << "complex grad \n";
-		cout << complexgrad << "\n";
-		solution::clear_calls();
+			solution complexgrad = CG(fT4, lab4_grad, x0, h, epsilon, nmax);
+			SAVE_TO_FILE("CG-" + std::to_string(h) + ".txt") << complexgrad.x(0) << ";" << complexgrad.x(1) << ";" << complexgrad.y(0) << ";" << solution::f_calls << ";" << solution::g_calls << "\n";
+			solution::clear_calls();
 
-		solution newton = Newton(fT4, lab4_grad, lab4_hes, x0, h, epsilon, nmax);
-		cout << "Newton \n";
-		cout << newton << "\n";
-		solution::clear_calls();
+
+			solution newton = Newton(fT4, lab4_grad, lab4_hes, x0, h, epsilon, nmax);
+			SAVE_TO_FILE("Newton-" + std::to_string(h) + ".txt") << newton.x(0) << ";" << newton.x(1) << ";" << newton.y(0) << ";" << solution::f_calls << ";" << solution::g_calls << ";" << solution::H_calls  << "\n";
+			solution::clear_calls();
+		}
+		
 	}
+#endif
+#if 0
+	// Jeden wybrany punkt startowy
+	// -9,5288	6,6786
+	{
+		x0(0) = -9.5288;
+		x0(1) = 6.6786;
 
+		for (auto h : hi) {
+			std::cout << "Simple gradient:\n";
+			solution simplegrad = SD(fT4, lab4_grad, x0, h, epsilon, nmax);
+			solution::clear_calls();
+			
+			std::cout << "Complex gradient:\n";
+			solution complexgrad = CG(fT4, lab4_grad, x0, h, epsilon, nmax);
+			solution::clear_calls();
+
+			std::cout << "Newton:" << h << "\n";
+			solution newton = Newton(fT4, lab4_grad, lab4_hes, x0, h, epsilon, nmax);
+			solution::clear_calls();
+		}
+	}
+#endif
+#if 1
+	// Rzeczywisty problem
 	auto dataPtr = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab4)->Read(
 		vector<filesystem::path>{
 			"../Input/Project 4/XData.txt",
@@ -369,25 +400,26 @@ void lab4()
 	Lab4_DataType* data = dynamic_cast<Lab4_DataType*>(dataPtr.get());
 
 	matrix theta(3, new double[] { 0, 0, 0 });
-	cout << "Dla theta = [0, 0, 0]";
-	cout << "J(theta) = " << cost_function(theta, data->x, data->y) << endl;
-	cout << "grad J(theta) = " << cost_function_grad(theta, data->x, data->y) << endl;
+	std::cout << "Dla theta = [0, 0, 0]";
+	std::cout << "J(theta) = " << cost_function(theta, data->x, data->y) << endl;
+	std::cout << "grad J(theta) = " << cost_function_grad(theta, data->x, data->y) << endl;
 
 	{
-		cout << "Now the real problem :)\n";
+		std::cout << "Now the real problem :)\n";
 		double hi[] = { 1e-4, 1e-3, 1e-2 };
 		double epsilon = 1e-2;
-		matrix tetha(3, new double[] { 0, 0, 0 });
+		//matrix tetha(3, new double[] { 0, 0, 0 });
 
 		for (auto h : hi)
 		{
-			cout << "\nh: " << h << "\n\n";
+			std::cout << "\nh: " << h << "\n\n";
 
-			solution result = CG(cost_function, cost_function_grad, tetha, h, epsilon, nmax, data->x, data->y);
-			cout << result << "\n";
+			solution result = CG(cost_function, cost_function_grad, theta, h, epsilon, nmax, data->x, data->y);
+			std::cout << result << "\n";
 			solution::clear_calls();
 		}
 	}
+#endif
 }
 
 void lab5() {}

@@ -325,7 +325,6 @@ matrix cost_function(matrix tetha, matrix ud1, matrix ud2)
 		sum += ud2(i) * log(sigmoid(tetha, trans(get_row(ud1, i)))) + (1 - ud2(i)) * log(1 - sigmoid(tetha, trans(get_row(ud1, i))));
 
 	sum = sum * -1.0 / m;
-	
 	return sum;
 }
 
@@ -343,8 +342,7 @@ matrix cost_function_grad(matrix tetha, matrix ud1, matrix ud2)
 		for (int i = 0; i < m; i++)
 			sum += (sigmoid(tetha, trans(get_row(ud1, i))) - ud2(i)) * ud1(i, j);
 
-		result(j) = sum * 1.0 / m;;
+		result(j) = sum * 1.0 / m;
 	}
-
 	return result;
 }
