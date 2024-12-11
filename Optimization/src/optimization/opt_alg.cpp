@@ -916,8 +916,8 @@ solution golden(matrix(*ff)(matrix, matrix, matrix), double a, double b, double 
 			}
 			else
 			{
-				c0 = d0;
 				a = c0;
+				c0 = d0;
 				d0 = a + alpha * (b - a);
 			}
 
