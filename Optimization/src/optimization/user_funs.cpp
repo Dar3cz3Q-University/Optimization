@@ -271,6 +271,7 @@ matrix lab4_fun(matrix x, matrix ud1, matrix ud2)
 	return pow((x(0) + 2 * x(1) - 7), 2) + pow((2 * x(0) + x(1) - 5), 2);
 }
 
+// funkcja testowa
 matrix fT4(matrix x, matrix ud1, matrix ud2)
 {
 	matrix y;
@@ -287,7 +288,6 @@ matrix fT4(matrix x, matrix ud1, matrix ud2)
 
 	return y;
 }
-
 matrix lab4_grad(matrix x, matrix ud1, matrix ud2)
 {
 	matrix y(2, 1);
@@ -319,19 +319,18 @@ double sigmoid(matrix theta, matrix x)
 matrix cost_function(matrix theta, matrix ud1, matrix ud2)
 {
 	constexpr int m = 100;
-	double coef = -1.0 / m;
 
 	double sum = 0.0;
 	for (int i = 0; i < m; i++)
 		sum += ud2(i) * log(sigmoid(theta, trans(get_row(ud1, i)))) + (1 - ud2(i)) * log(1 - sigmoid(theta, trans(get_row(ud1, i))));
 
-	return coef * sum;
+	sum = sum * -1.0 / m;
+	return sum;
 }
 
 matrix cost_function_grad(matrix theta, matrix ud1, matrix ud2)
 {
 	constexpr int m = 100;
-	double coef = 1.0 / m;
 
 	constexpr int n = 3;
 
@@ -343,8 +342,7 @@ matrix cost_function_grad(matrix theta, matrix ud1, matrix ud2)
 		for (int i = 0; i < m; i++)
 			sum += (sigmoid(theta, trans(get_row(ud1, i))) - ud2(i)) * ud1(i, j);
 
-		result(j) = sum * coef;
+		result(j) = sum * 1.0 / m;
 	}
-
 	return result;
 }
