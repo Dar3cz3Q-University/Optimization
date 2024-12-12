@@ -93,7 +93,6 @@ TEST(SD, lab4_fun__lab4_grad__variable_step)
 	EXPECT_NEAR(result.x(0), 1, 1e-5);
 	EXPECT_NEAR(result.x(1), 3, 1e-5);
 	EXPECT_EQ(solution::g_calls, 59);
-	// TODO: Add comparing y when function will be using fit_fun
 }
 
 TEST(CG, lab4_fun__lab4_grad__variable_step)
@@ -115,7 +114,6 @@ TEST(CG, lab4_fun__lab4_grad__variable_step)
 	EXPECT_NEAR(result.x(0), 1, 1e-5);
 	EXPECT_NEAR(result.x(1), 3, 1e-5);
 	EXPECT_EQ(solution::g_calls, 26);
-	// TODO: Add comparing y when function will be using fit_fun
 }
 
 TEST(Newton, lab4_fun__lab4_grad__variable_step)
@@ -138,7 +136,6 @@ TEST(Newton, lab4_fun__lab4_grad__variable_step)
 	EXPECT_NEAR(result.x(1), 3, 1e-5);
 	EXPECT_EQ(solution::g_calls, 2);
 	EXPECT_EQ(solution::H_calls, 2);
-	// TODO: Add comparing y when function will be using fit_fun
 }
 
 } // namespace lab_4

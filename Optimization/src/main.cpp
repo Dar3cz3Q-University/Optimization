@@ -339,8 +339,6 @@ void lab4()
 	int nmax = 10000;
 	double hi[] = { 0.05, 0.12, 0.0 }; // długości kroku
 
-	// 100 optow dla kazdej dlugosci kroku, kazdej metody losowy punkt
-	// saving macro: 	SAVE_TO_FILE("x-" + std::to_string(a) + ".txt") << x(0) << ";" << x(1) << "\n";
 #if 0
 	for (auto h : hi)
 	{
@@ -407,8 +405,8 @@ void lab4()
 	{
 		std::cout << "Now the real problem :)\n";
 		double hi[] = { 1e-4, 1e-3, 1e-2 };
-		double epsilon = 1e-2;
-		//matrix tetha(3, new double[] { 0, 0, 0 });
+		double epsilon = 1e-4;
+		matrix theta(3, new double[] { 0, 0, 0 });
 
 		for (auto h : hi)
 		{
@@ -417,6 +415,15 @@ void lab4()
 			solution result = CG(cost_function, cost_function_grad, theta, h, epsilon, nmax, data->x, data->y);
 			std::cout << result << "\n";
 			solution::clear_calls();
+
+			int p = 0;
+			for (int i = 0; i < 100; i++)
+			{
+				matrix x = get_row(data->x, i);
+				double pi = round(sigmoid(result.x, trans(x)));
+				p += (pi == data->y(i) ? 1 : 0);
+			}
+			cout << "P(0*) = " << p << "\n";
 		}
 	}
 #endif
