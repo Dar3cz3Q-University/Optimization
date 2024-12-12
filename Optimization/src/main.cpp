@@ -368,6 +368,7 @@ void lab4()
 #if 0
 	// Jeden wybrany punkt startowy
 	// -9,5288	6,6786
+	// wlaczyc zapisywanie do pliku iteracja po iteracji w odpowiednich miejscach w funkcjach optymalizacyjnych
 	{
 		x0(0) = -9.5288;
 		x0(1) = 6.6786;
@@ -387,7 +388,7 @@ void lab4()
 		}
 	}
 #endif
-#if 1
+#if 0
 	// Rzeczywisty problem
 	auto dataPtr = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab4)->Read(
 		vector<filesystem::path>{
