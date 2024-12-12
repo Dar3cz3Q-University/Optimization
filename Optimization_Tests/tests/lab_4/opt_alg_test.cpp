@@ -92,7 +92,7 @@ TEST(SD, lab4_fun__lab4_grad__variable_step)
 	// Then
 	EXPECT_NEAR(result.x(0), 1, 1e-5);
 	EXPECT_NEAR(result.x(1), 3, 1e-5);
-	EXPECT_EQ(solution::g_calls, 59);
+	EXPECT_EQ(solution::g_calls, 25);
 }
 
 TEST(CG, lab4_fun__lab4_grad__variable_step)
@@ -113,7 +113,7 @@ TEST(CG, lab4_fun__lab4_grad__variable_step)
 	// Then
 	EXPECT_NEAR(result.x(0), 1, 1e-5);
 	EXPECT_NEAR(result.x(1), 3, 1e-5);
-	EXPECT_EQ(solution::g_calls, 26);
+	EXPECT_EQ(solution::g_calls, 6);
 }
 
 TEST(Newton, lab4_fun__lab4_grad__variable_step)
@@ -134,8 +134,8 @@ TEST(Newton, lab4_fun__lab4_grad__variable_step)
 	// Then
 	EXPECT_NEAR(result.x(0), 1, 1e-5);
 	EXPECT_NEAR(result.x(1), 3, 1e-5);
-	EXPECT_EQ(solution::g_calls, 2);
-	EXPECT_EQ(solution::H_calls, 2);
+	EXPECT_EQ(solution::g_calls, 3);
+	EXPECT_EQ(solution::H_calls, 3);
 }
 
 } // namespace lab_4
