@@ -29,7 +29,7 @@ int main()
 {
 	try
 	{
-		lab4();
+		lab5();
 	}
 	catch (string EX_INFO)
 	{
@@ -332,23 +332,24 @@ void lab3()
 void lab4()
 {
 	matrix x0(2, 1);
-	/*x0(0) = 5;
-	x0(1) = 2;*/
 
 	double epsilon = 1e-8;
 	int nmax = 10000;
-	double hi[] = { 0.05, 0.12, 0.0 }; // długości kroku
+	double hi[] = { 0.05, 0.12, 0.0 };
 
-#if 0
+	//
+	// 100 losowych symulacji
+	//
+
 	for (auto h : hi)
 	{
 		std::cout << "\nh: " << h << "\n\n";
+
 		for (int i = 0; i < 100; i++) {
 			x0(0) = RandomNumberGenerator::Get().Double(-10, 10);
 			x0(1) = RandomNumberGenerator::Get().Double(-10, 10);
 			SAVE_TO_FILE("x-" + std::to_string(h) + ".txt") << x0(0) << ";" << x0(1) << "\n";
 
-			// Dla kroku 0.12 wychodzi -inf. Testowalem dla roznych x i h i z tego co widze to zawsze jak h > 0.11 to wywala inf
 			solution simplegrad = SD(fT4, lab4_grad, x0, h, epsilon, nmax);
 			SAVE_TO_FILE("SD-" + std::to_string(h) + ".txt") << simplegrad.x(0) << ";" << simplegrad.x(1) << ";" << simplegrad.y(0) << ";" << solution::f_calls << ";" << solution::g_calls << "\n";
 			solution::clear_calls();
@@ -357,18 +358,16 @@ void lab4()
 			SAVE_TO_FILE("CG-" + std::to_string(h) + ".txt") << complexgrad.x(0) << ";" << complexgrad.x(1) << ";" << complexgrad.y(0) << ";" << solution::f_calls << ";" << solution::g_calls << "\n";
 			solution::clear_calls();
 
-
 			solution newton = Newton(fT4, lab4_grad, lab4_hes, x0, h, epsilon, nmax);
 			SAVE_TO_FILE("Newton-" + std::to_string(h) + ".txt") << newton.x(0) << ";" << newton.x(1) << ";" << newton.y(0) << ";" << solution::f_calls << ";" << solution::g_calls << ";" << solution::H_calls  << "\n";
 			solution::clear_calls();
 		}
-		
 	}
-#endif
-#if 0
-	// Jeden wybrany punkt startowy
-	// -9,5288	6,6786
-	// wlaczyc zapisywanie do pliku iteracja po iteracji w odpowiednich miejscach w funkcjach optymalizacyjnych
+
+	//
+	// Jedna konkretna symulacja
+	//
+
 	{
 		x0(0) = -9.5288;
 		x0(1) = 6.6786;
@@ -387,9 +386,11 @@ void lab4()
 			solution::clear_calls();
 		}
 	}
-#endif
-#if 0
+
+	//
 	// Rzeczywisty problem
+	//
+
 	auto dataPtr = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab4)->Read(
 		vector<filesystem::path>{
 			"../Input/Project 4/XData.txt",
@@ -427,7 +428,6 @@ void lab4()
 			cout << "P(0*) = " << p << "\n";
 		}
 	}
-#endif
 }
 
 void lab5() {}
