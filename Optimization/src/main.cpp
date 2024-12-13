@@ -430,6 +430,14 @@ void lab4()
 	}
 }
 
-void lab5() {}
+void lab5() {
+	matrix x(2, 1);
+	x(0) = 5;
+	x(1) = 5;
+	matrix ud1(2, 1);
+	ud1(0) = 5; // w
+	ud1(1) = 1; // a
+	std::cout << fT5(x,ud1);
+}
 
 void lab6() {}
