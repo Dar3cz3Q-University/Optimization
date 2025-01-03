@@ -950,7 +950,40 @@ solution Powell(matrix(*ff)(matrix, matrix, matrix), matrix x0, double epsilon, 
 		solution Xopt;
 		// Tu wpisz kod funkcji
 
-		return Xopt;
+		int n = 3; //??
+		matrix d; //?
+		matrix e; //?
+		matrix h;//?
+		d = e; //?
+
+		int i = 0;
+		matrix p;
+		while (true)
+		{
+			p = x0;
+			for (int j = 0; j < n; j++)
+			{
+				//TODO: wyznacz hj(i)
+				//
+				p = p + h * d;
+			}
+			if (norm(p - x0) < epsilon)
+				return x0;
+			for (int j = 0; i < n - 1; j++)
+			{
+				d = d; //?
+			}
+			d = p - p;
+			//TODO: wyznacz h_n+1(i)
+			//
+			p = p + h * d;
+			x0 = p;
+			i++;
+
+			if (solution::f_calls > Nmax)
+				throw std::string("Przekroczono limit wywolan funkcji :)");
+				return NULL;
+		}
 	}
 	catch (string ex_info)
 	{

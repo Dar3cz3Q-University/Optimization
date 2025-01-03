@@ -360,9 +360,12 @@ matrix fT5(matrix x, matrix ud1, matrix ud2)
 			);
 	}
 	else {
+		double w = ud1(0);
+		// ud2 = { {x1, d1}, {x2, d2} } ?
 		matrix yt;
 		yt = fT5(ud2[0] + x * ud2[1]);
-		y = ud1(0) + yt(0) + (1 - ud1(0)) * yt(1);
+		//f(x) = w * f1(x) + (1 - w) * f2(x);
+		y = w + yt(0) + (1 - w) * yt(1);
 	}
 	return y;
 }
@@ -400,4 +403,5 @@ matrix fR5(matrix x, matrix ud1, matrix ud2) {
 		if (yt(1) > 0.005) y = y + c * pow(yt(1) - 0.005, 2);
 		if (yt(2) > 300e6) y = y + c * pow(yt(2) - 300e6, 2);
 	}
+	return y;
 }
