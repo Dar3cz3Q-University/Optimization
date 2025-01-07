@@ -41,6 +41,7 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 {
 	try
 	{
+#if 0
 		double* p = new double[2] { 0, 0 };
 
 		int i = 0;
@@ -100,6 +101,71 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 		p[1] = m2d(sx0.x);
 
 		return p;
+#else
+		double* p = new double[2] { 0, 0 };
+		double x1 = x0 + d;
+		int fcalls = 1;
+		matrix x0Mat(x0);
+		matrix x1Mat(x1);
+
+		if (ff(x1Mat, ud1, ud2) == ff(x0Mat, ud1, ud2))
+		{
+			p[0] = m2d(x0Mat);
+			p[1] = m2d(x1Mat);
+			return p;
+		}
+
+		x1Mat = x1;
+		if (ff(x1Mat, ud1, ud2) > ff(x0Mat, ud1, ud2))
+		{
+			d = -d;
+			x1 = x0 + d;
+			fcalls++;
+			x1Mat = x1;
+			if (ff(x1Mat, ud1, ud2) >= ff(x0Mat, ud1, ud2))
+			{
+				p[0] = m2d(x1Mat);
+				p[1] = m2d(x0Mat) - d;
+				return p;
+			}
+		}
+
+		int i = 1;
+		double xi_next = 0;
+		matrix xtempMat(0);
+
+		while (fcalls <= Nmax)
+		{
+			xi_next = x0 + alpha * i * d;
+			fcalls++;
+			x1Mat = xi_next;
+			xtempMat = (x0 + alpha * (i - 1) * d);
+			if (ff(x1Mat, ud1, ud2) >= ff(xtempMat, ud1, ud2))
+				break;
+
+			i++;
+		}
+
+		if (fcalls > Nmax)
+		{
+			throw string("Przekroczono liczbe wywolan\n");
+		}
+		else
+		{
+			if (d > 0)
+			{
+				p[0] = m2d(x0Mat) + alpha * (i - 2) * d;
+				p[1] = m2d(x1Mat);
+				return p;
+			}
+			else
+			{
+				p[0] = m2d(x1Mat);
+				p[1] = m2d(x0Mat) + alpha * (i - 2) * d;
+				return p;
+			}
+		}
+#endif
 	}
 	catch (string ex_info)
 	{
@@ -948,42 +1014,61 @@ solution Powell(matrix(*ff)(matrix, matrix, matrix), matrix x0, double epsilon, 
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
 
-		int n = 3; //??
-		matrix d; //?
-		matrix e; //?
-		matrix h;//?
-		d = e; //?
+		int n = get_len(x0);
 
-		int i = 0;
-		matrix p;
+		matrix a(n, 2);
+		matrix d = ident_mat(n);
+
+		solution X, p, h;
+		X = x0;
+
+		double* section;
+
 		while (true)
 		{
-			p = x0;
-			for (int j = 0; j < n; j++)
+			p = X;
+
+			for (int i = 0; i < n; i++)
 			{
-				//TODO: wyznacz hj(i)
-				//
-				p = p + h * d;
+				a.set_col(p.x, 0);
+				a.set_col(d[i], 1);
+				section = expansion(ff, 0, 1, 1.2, Nmax, ud1, a);
+				h = golden(ff, section[0], section[1], epsilon, Nmax, ud1, a);
+				p.x = p.x + h.x * d[i];
 			}
-			if (norm(p - x0) < epsilon)
-				return x0;
-			for (int j = 0; i < n - 1; j++)
+
+			if (norm(X.x - p.x) < epsilon)
 			{
-				d = d; //?
+				Xopt = p;
+				Xopt.fit_fun(ff, ud1, ud2);
+
+				Xopt.flag = 0;
+				break;
 			}
-			d = p - p;
-			//TODO: wyznacz h_n+1(i)
-			//
-			p = p + h * d;
-			x0 = p;
-			i++;
 
 			if (solution::f_calls > Nmax)
-				throw std::string("Przekroczono limit wywolan funkcji :)");
-				return NULL;
+			{
+				Xopt = p;
+				Xopt.fit_fun(ff, ud1, ud2);
+				throw std::string("Przekroczono limit wywolan funkcji Powell :(");
+			}
+
+			for (int i = 0; i < n - 1; ++i)
+				d.set_col(d[i + 1], i);
+
+			d.set_col(p.x - X.x, n - 1);
+			a.set_col(p.x, 0);
+			a.set_col(d[n - 1], 1);
+
+			section = expansion(ff, 0, 1, 1.2, Nmax, ud1, a);
+
+			h = golden(ff, section[0], section[1], epsilon, Nmax, ud1, a);
+
+			X = p.x + h.x * d[n - 1];
 		}
+
+		return Xopt;
 	}
 	catch (string ex_info)
 	{

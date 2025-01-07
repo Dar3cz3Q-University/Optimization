@@ -430,14 +430,59 @@ void lab4()
 	}
 }
 
-void lab5() {
-	matrix x(2, 1);
-	x(0) = 5;
-	x(1) = 5;
+void lab5() 
+{
 	matrix ud1(2, 1);
-	ud1(0) = 5; // w
-	ud1(1) = 1; // a
-	std::cout << fT5(x,ud1);
+
+	double a_tab[] = { 1, 10, 100 };
+	double epsilon = 0.001;
+	int Nmax = 10000;
+
+	//
+	// Testowa funkcja celu
+	//
+
+#if 1
+	for (double a : a_tab)
+	{
+		for (double w = 0.0; w <= 1.01; w += 0.01)
+		{
+			ud1(0) = w;
+			ud1(1) = a;
+
+			matrix x0(2, 1);
+			x0(0) = RandomNumberGenerator::Get().Double(-10, 10);
+			x0(1) = RandomNumberGenerator::Get().Double(-10, 10);
+
+			solution result1 = Powell(fT5, x0, epsilon, Nmax, ud1);
+
+			SAVE_TO_FILE("Test-" + std::to_string(a) + ".txt") << x0(0) << ";" << x0(1)<< ";" << result1.x(0) << ";" << result1.x(1) << ";" << result1.y(0) << ";" << result1.y(1) << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+		}
+	}
+#endif
+
+	//
+	// Problem rzeczywisty
+	//
+
+	{
+		matrix ud1(1);
+
+		for (double w = 0.0; w <= 1.01; w += 0.01)
+		{
+			ud1(0) = w;
+
+			matrix x0(2, 1);
+			x0(0) = RandomNumberGenerator::Get().Double(0.2, 1);		// l <200, 1000>
+			x0(1) = RandomNumberGenerator::Get().Double(0.01, 0.05);	// d <10, 50>
+
+			solution result1 = Powell(fR5, x0, epsilon, Nmax, ud1);
+
+			SAVE_TO_FILE("Real.txt") << x0(0) * 1000 << ";" << x0(1) * 1000 << ";" << result1.x(0) * 1000 << ";" << result1.x(1) * 1000 << ";" << result1.y(0) << ";" << result1.y(1) * 1000 << ";" << solution::f_calls << "\n";
+			solution::clear_calls();
+		}
+	}
 }
 
 void lab6() {}

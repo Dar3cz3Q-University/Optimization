@@ -271,7 +271,6 @@ matrix lab4_fun(matrix x, matrix ud1, matrix ud2)
 	return pow((x(0) + 2 * x(1) - 7), 2) + pow((2 * x(0) + x(1) - 5), 2);
 }
 
-// funkcja testowa
 matrix fT4(matrix x, matrix ud1, matrix ud2)
 {
 	matrix y;
@@ -350,58 +349,59 @@ matrix cost_function_grad(matrix theta, matrix ud1, matrix ud2)
 matrix fT5(matrix x, matrix ud1, matrix ud2)
 {
 	matrix y;
-	if (isnan(ud2(0, 0))) {
+
+	if (isnan(ud2(0, 0)))
+	{
 		y = matrix(2, 1);
-		y(0) = ud1(1) * (
-			pow(x(0) - 2, 2) + pow(x(1) - 2, 2)
-		);
-		y(1) = 1.0 / ud1(1) * (
-			pow(x(0) + 2, 2) + pow(x(1) + 2, 2)
-			);
+		y(0) = ud1(1) * (pow(x(0) - 2, 2) + pow(x(1) - 2, 2));
+		y(1) = 1.0 / ud1(1) * (pow(x(0) + 2, 2) + pow(x(1) + 2, 2));
 	}
-	else {
-		double w = ud1(0);
-		// ud2 = { {x1, d1}, {x2, d2} } ?
+	else
+	{
+		const double w = ud1(0);
 		matrix yt;
-		yt = fT5(ud2[0] + x * ud2[1]);
-		//f(x) = w * f1(x) + (1 - w) * f2(x);
-		y = w + yt(0) + (1 - w) * yt(1);
+		yt = fT5(ud2[0] + x * ud2[1], ud1);
+		y = w * yt(0) + (1 - w) * yt(1);
 	}
+
 	return y;
 }
-matrix fR5(matrix x, matrix ud1, matrix ud2) {
-	// ud1 - w
-	// ud2 = { {x1, d1}, {x2, d2} }
-	// podajemy x = {l, d} przyj¹æ {0.3, 0.04}
+
+matrix fR5(matrix x, matrix ud1, matrix ud2) 
+{
 	matrix y;
-	//uwaga wpisuje na twardo:
-	// jednostki w uk³adzie SI, bez przedrostkow k, G itd
-	double rho = 7800;
-	double P = 1000;
-	double E = 207e9;
-	double l = x(0); // l <0.2m, 1m>
-	double d = x(1); // d <0.01m, 0.05m>
+
+	const double rho = 7800;	// Gestosc (kg/m3)
+	const double P = 1000;		// Dzialajaca sila (N)
+	const double E = 207e9;		// Modul Younga (Pa)
 
 	if (isnan(ud2(0, 0))) {
-		y = matrix(3, 1);
-		y(0) = rho * x(0) * M_PI * pow(x(1), 2) / 4; // masa
-		y(1) = 64.0 * P * pow(l, 3) / (3 * E * M_PI * pow(d, 4)); // ugiecie
-		y(2) = 32.0 * P * l / (M_PI * pow(d, 3)); // naprê¿ênie maksymalne
-	}
-	else {
-		matrix yt, xt = ud2[0] + x * ud2[1];
-		yt = fR5(xt, ud1);
-		y = ud1 * (yt(0) - 0.12) / (15.3 - 0.12) + (1 - ud1) * (yt(1) - 4.2e-5) / (3.28 - 4.2e-5);
-		double c = 1e10;
+		const double l = x(0);
+		const double d = x(1);
 
-		if (x(0) < 0.2) y = y + c * pow(0.2 - x(0), 2);
-		if (x(0) > 1) y = y + c * pow(x(0) - 1, 2);
-		if (x(1) < 0.01) y = y + c * pow(0.01 - x(1), 2);
-		if (x(1) > 0.05) y = y + c * pow(x(1) - 0.05, 2); // by³o do wydedukowania, analogiczne do powyzszych
-		if (x(1) > 0.005) y = y + c * pow(x(1) - 0.005, 2);
+		y = matrix(3, 1);
+		y(0) = rho * l * M_PI * (pow(d, 2) / 4);					// Masa
+		y(1) = (64.0 * P * pow(l, 3)) / (3 * E * M_PI * pow(d, 4));	// Ugiecie
+		y(2) = (32.0 * P * l) / (M_PI * pow(d, 3));					// Naprezenie maksymalne
+	}
+	else 
+	{
+		matrix xt = ud2[0] + x * ud2[1];
+		matrix yt = fR5(xt, ud1);
+
+		y = ud1 * (yt(0) - 0.12) / (15.3 - 0.12) + (1 - ud1) * (yt(1) - 4.2e-5) / (3.28 - 4.2e-5);
+
+		const double c = 1e10;
+
+		if (xt(0) < 0.2) y = y + c * pow(0.2 - xt(0), 2);
+		if (xt(0) > 1) y = y + c * pow(xt(0) - 1, 2);
+		if (xt(1) < 0.01) y = y + c * pow(0.01 - xt(1), 2);
+		if (xt(1) > 0.05) y = y + c * pow(xt(1) - 0.05, 2);
+		if (xt(1) > 0.005) y = y + c * pow(xt(1) - 0.005, 2);
 
 		if (yt(1) > 0.005) y = y + c * pow(yt(1) - 0.005, 2);
 		if (yt(2) > 300e6) y = y + c * pow(yt(2) - 300e6, 2);
 	}
+
 	return y;
 }
