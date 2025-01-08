@@ -443,16 +443,16 @@ void lab5()
 	//
 
 #if 1
-	for (double a : a_tab)
+	for (double w = 0.0; w <= 1.01; w += 0.01)
 	{
-		for (double w = 0.0; w <= 1.01; w += 0.01)
+		matrix x0(2, 1);
+		x0(0) = RandomNumberGenerator::Get().Double(-10, 10);
+		x0(1) = RandomNumberGenerator::Get().Double(-10, 10);
+
+		for (double a : a_tab)
 		{
 			ud1(0) = w;
 			ud1(1) = a;
-
-			matrix x0(2, 1);
-			x0(0) = RandomNumberGenerator::Get().Double(-10, 10);
-			x0(1) = RandomNumberGenerator::Get().Double(-10, 10);
 
 			solution result1 = Powell(fT5, x0, epsilon, Nmax, ud1);
 
