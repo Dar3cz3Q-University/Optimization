@@ -1016,56 +1016,49 @@ solution Powell(matrix(*ff)(matrix, matrix, matrix), matrix x0, double epsilon, 
 		solution Xopt;
 
 		int n = get_len(x0);
-
-		matrix a(n, 2);
-		matrix d = ident_mat(n);
-
-		solution X, p, h;
-		X = x0;
-
-		double* section;
+		matrix D = ident_mat(n), A(n, 2);
+		solution X, P, h;
+		X.x = x0;
+		double* ab;
 
 		while (true)
 		{
-			p = X;
+			P = X;
 
-			for (int i = 0; i < n; i++)
+			for (int i = 0; i < n; ++i)
 			{
-				a.set_col(p.x, 0);
-				a.set_col(d[i], 1);
-				section = expansion(ff, 0, 1, 1.2, Nmax, ud1, a);
-				h = golden(ff, section[0], section[1], epsilon, Nmax, ud1, a);
-				p.x = p.x + h.x * d[i];
+				A.set_col(P.x, 0);
+				A.set_col(D[i], 1);
+				ab = expansion(ff, 0, 1, 1.2, Nmax, ud1, A);
+				h = golden(ff, ab[0], ab[1], epsilon, Nmax, ud1, A);
+				P.x = P.x + h.x * D[i];
 			}
 
-			if (norm(X.x - p.x) < epsilon)
+			if (norm(P.x - X.x) < epsilon)
 			{
-				Xopt = p;
+				Xopt = X;
 				Xopt.fit_fun(ff, ud1, ud2);
-
 				Xopt.flag = 0;
 				break;
 			}
 
 			if (solution::f_calls > Nmax)
 			{
-				Xopt = p;
+				Xopt = X;
 				Xopt.fit_fun(ff, ud1, ud2);
-				throw std::string("Przekroczono limit wywolan funkcji Powell :(");
+				Xopt.flag = 1;
+				break;
 			}
 
 			for (int i = 0; i < n - 1; ++i)
-				d.set_col(d[i + 1], i);
+				D.set_col(D[i + 1], i);
 
-			d.set_col(p.x - X.x, n - 1);
-			a.set_col(p.x, 0);
-			a.set_col(d[n - 1], 1);
-
-			section = expansion(ff, 0, 1, 1.2, Nmax, ud1, a);
-
-			h = golden(ff, section[0], section[1], epsilon, Nmax, ud1, a);
-
-			X = p.x + h.x * d[n - 1];
+			D.set_col(P.x - X.x, n - 1);
+			A.set_col(P.x, 0);
+			A.set_col(D[n - 1], 1);
+			ab = expansion(ff, 0, 1, 1.2, Nmax, ud1, A);
+			h = golden(ff, ab[0], ab[1], epsilon, Nmax, ud1, A);
+			X.x = P.x + h.x * D[n - 1];
 		}
 
 		return Xopt;
