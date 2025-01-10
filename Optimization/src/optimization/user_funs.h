@@ -60,5 +60,7 @@ matrix cost_function_grad(matrix, matrix = NAN, matrix = NAN);
 
 // Lab 5
 matrix lab5_fun(matrix, matrix = NAN, matrix = NAN);
+
 matrix fT5(matrix, matrix = NAN, matrix = NAN);
+
 matrix fR5(matrix, matrix = NAN, matrix = NAN);

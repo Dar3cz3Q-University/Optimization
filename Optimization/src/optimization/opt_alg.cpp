@@ -41,6 +41,7 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 {
 	try
 	{
+#if 0
 		double* p = new double[2] { 0, 0 };
 
 		int i = 0;
@@ -100,6 +101,71 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, doub
 		p[1] = m2d(sx0.x);
 
 		return p;
+#else
+		double* p = new double[2] { 0, 0 };
+		double x1 = x0 + d;
+		int fcalls = 1;
+		matrix x0Mat(x0);
+		matrix x1Mat(x1);
+
+		if (ff(x1Mat, ud1, ud2) == ff(x0Mat, ud1, ud2))
+		{
+			p[0] = m2d(x0Mat);
+			p[1] = m2d(x1Mat);
+			return p;
+		}
+
+		x1Mat = x1;
+		if (ff(x1Mat, ud1, ud2) > ff(x0Mat, ud1, ud2))
+		{
+			d = -d;
+			x1 = x0 + d;
+			fcalls++;
+			x1Mat = x1;
+			if (ff(x1Mat, ud1, ud2) >= ff(x0Mat, ud1, ud2))
+			{
+				p[0] = m2d(x1Mat);
+				p[1] = m2d(x0Mat) - d;
+				return p;
+			}
+		}
+
+		int i = 1;
+		double xi_next = 0;
+		matrix xtempMat(0);
+
+		while (fcalls <= Nmax)
+		{
+			xi_next = x0 + alpha * i * d;
+			fcalls++;
+			x1Mat = xi_next;
+			xtempMat = (x0 + alpha * (i - 1) * d);
+			if (ff(x1Mat, ud1, ud2) >= ff(xtempMat, ud1, ud2))
+				break;
+
+			i++;
+		}
+
+		if (fcalls > Nmax)
+		{
+			throw string("Przekroczono liczbe wywolan\n");
+		}
+		else
+		{
+			if (d > 0)
+			{
+				p[0] = m2d(x0Mat) + alpha * (i - 2) * d;
+				p[1] = m2d(x1Mat);
+				return p;
+			}
+			else
+			{
+				p[0] = m2d(x1Mat);
+				p[1] = m2d(x0Mat) + alpha * (i - 2) * d;
+				return p;
+			}
+		}
+#endif
 	}
 	catch (string ex_info)
 	{
@@ -948,7 +1014,52 @@ solution Powell(matrix(*ff)(matrix, matrix, matrix), matrix x0, double epsilon, 
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+
+		int n = get_len(x0);
+		matrix D = ident_mat(n), A(n, 2);
+		solution X, P, h;
+		X.x = x0;
+		double* ab;
+
+		while (true)
+		{
+			P = X;
+
+			for (int i = 0; i < n; ++i)
+			{
+				A.set_col(P.x, 0);
+				A.set_col(D[i], 1);
+				ab = expansion(ff, 0, 1, 1.2, Nmax, ud1, A);
+				h = golden(ff, ab[0], ab[1], epsilon, Nmax, ud1, A);
+				P.x = P.x + h.x * D[i];
+			}
+
+			if (norm(P.x - X.x) < epsilon)
+			{
+				Xopt = X;
+				Xopt.fit_fun(ff, ud1, ud2);
+				Xopt.flag = 0;
+				break;
+			}
+
+			if (solution::f_calls > Nmax)
+			{
+				Xopt = X;
+				Xopt.fit_fun(ff, ud1, ud2);
+				Xopt.flag = 1;
+				break;
+			}
+
+			for (int i = 0; i < n - 1; ++i)
+				D.set_col(D[i + 1], i);
+
+			D.set_col(P.x - X.x, n - 1);
+			A.set_col(P.x, 0);
+			A.set_col(D[n - 1], 1);
+			ab = expansion(ff, 0, 1, 1.2, Nmax, ud1, A);
+			h = golden(ff, ab[0], ab[1], epsilon, Nmax, ud1, A);
+			X.x = P.x + h.x * D[n - 1];
+		}
 
 		return Xopt;
 	}
