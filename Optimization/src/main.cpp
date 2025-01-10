@@ -29,7 +29,7 @@ int main()
 {
 	try
 	{
-		lab5();
+		lab6();
 	}
 	catch (string EX_INFO)
 	{
@@ -485,4 +485,11 @@ void lab5()
 	}
 }
 
-void lab6() {}
+void lab6() 
+{
+	auto dataPtr = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab6)->Read(
+		vector<filesystem::path>{"../Input/Project 6/polozenia.txt"});
+	Lab6_DataType* data = dynamic_cast<Lab6_DataType*>(dataPtr.get());
+
+	std::cout << data->x << "\n";
+}

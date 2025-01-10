@@ -1074,7 +1074,17 @@ solution EA(matrix(*ff)(matrix, matrix, matrix), int N, matrix lb, matrix ub, in
 	try
 	{
 		solution Xopt;
-		// Tu wpisz kod funkcji
+		
+		double alpha = pow(N, -0.5);
+		double beta = pow(2 * N, -0.25);
+		matrix P(mi - 1, 2);
+		for (int i = 0; i < mi; i++)
+		{
+			//x_i(0)
+			P[i](i, 0) = 0;
+			//sigma_i(0)
+			P[i](i, 1) = sigma0(i);
+		}
 
 		return Xopt;
 	}
