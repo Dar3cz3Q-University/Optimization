@@ -404,3 +404,75 @@ matrix fR5(matrix x, matrix ud1, matrix ud2)
 
 	return y;
 }
+
+matrix lab6_fun(matrix x, matrix ud1, matrix ud2)
+{
+	return pow(x(0), 2) + pow(x(1), 2) - cos(2.5 * M_PI * x(0)) - cos(2.5 * M_PI * x(1)) + 2;
+}
+
+matrix df6(double t, matrix Y, matrix ud1, matrix ud2)
+{
+#if 1
+	double m1 = 5;
+	double m2 = 5;
+	double k1 = 1;
+	double k2 = 1;
+	double F = 1.0;
+
+	double b1 = ud2(0);
+	double b2 = ud2(1);
+
+	matrix dY(4, 1);
+	dY(0) = Y(1);
+	dY(1) = (-b1 * Y(1) - b2 * (Y(1) - Y(3)) - k1 * Y(0) - k2 * (Y(0) - Y(2))) / m1;
+	dY(2) = Y(3);
+	dY(3) = (F + b2 * (Y(1) - Y(3)) + k2 * (Y(0) - Y(2))) / m2;
+	return dY;
+#else
+	double b1 = ud1(0);
+	double b2 = ud1(1);
+	double k1 = 1;
+	double k2 = 1;
+	double m1 = 5;
+	double m2 = 5;
+	double F = 1;
+
+	matrix dY(4, 1);
+	dY(0) = Y(1);
+	dY(1) = ( - b1 * Y(1) - b2 * (Y(1) - Y(3)) - k1 * Y(0) - k2 * (Y(0) - Y(2))) / m1;
+	dY(2) = Y(3);
+	dY(3) = (F + b2 * (Y(1) - Y(3)) + k2 * (Y(0) - Y(2))) / m2;
+
+	return dY;
+#endif
+}
+
+matrix fR6(matrix x, matrix ud1, matrix ud2)
+{
+#if 1
+	matrix y;
+	matrix Y0(4, 1);
+	matrix* Y = solve_ode(df6, 0, 0.1, 100, Y0, ud1, x[0]);
+	for (int i = 0; i < ud1(0); i++)
+	{
+		y = y + abs(ud2(i, 0) - Y[1](i, 0)) + abs(ud2(i, 1) - Y[1](i, 2));
+	}
+	y(0) = y(0) / (2 * ud1(0));
+
+
+	return y;
+
+#else
+	matrix Y0(4, new double[4] { 0, 0, 0, 0 });
+	matrix* Y = solve_ode(df6, 0, 0.01, 100, Y0, ud1, x(0));
+	matrix y;
+	int N = get_len(Y[0]);
+
+	for (int i = 0; i < N; i++)
+	{
+		y = y + abs(x(i, 0) - Y[1](i, 0) + abs(x(i, 1) - Y[1](i, 2)));
+	}
+
+	return y;
+#endif
+}

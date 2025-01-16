@@ -29,7 +29,7 @@ int main()
 {
 	try
 	{
-		lab5();
+		lab6();
 	}
 	catch (string EX_INFO)
 	{
@@ -485,4 +485,68 @@ void lab5()
 	}
 }
 
-void lab6() {}
+void lab6() 
+{
+	double sigma_tab[] = { 0.01, 0.1, 1, 10, 100 };
+	int N = 2;
+
+	matrix lb(N, 1);
+	lb(0) = -5;
+	lb(1) = -5;
+
+	matrix ub(N, 1);
+	ub(0) = 5;
+	ub(1) = 5;
+
+	int mi = 20;
+	int lambda = 40;
+	double epsilon = 1e-5;
+	int Nmax = 10000;
+
+	//
+	// Test
+	//
+
+#if 1
+	string msg;
+	for (auto sigma : sigma_tab)
+	{
+		for (int i = 0; i < 100; i++)
+		{
+			solution result = EA(lab6_fun, N, lb, ub, mi, lambda, sigma, epsilon, Nmax);
+
+			msg = solution::f_calls > Nmax ? "nie" : "tak";
+
+			SAVE_TO_FILE("Test-" + to_string(sigma) + ".txt") << result.x(0) << ";" << result.x(1) << ";" << result.y(0) << ";" << solution::f_calls << ";" << msg << "\n";
+
+			solution::clear_calls();
+		}
+	}
+#endif
+
+	//
+	// Real
+	//
+
+	auto dataPtr = FileReaderFactory().CreateFileReader(FileTypeEnum::Lab6)->Read(
+		vector<filesystem::path>{"../Input/Project 6/polozenia.txt"});
+	Lab6_DataType* data = dynamic_cast<Lab6_DataType*>(dataPtr.get());
+
+	lb = matrix(2, 1, 0.1);
+	ub = matrix(2, 1, 3);
+
+	solution result = EA(fR6, N, lb, ub, mi, lambda, matrix(2, 1, 1), 1e-2, Nmax, 1001, data->x);
+
+	SAVE_TO_FILE("Real.txt") << result.x(0) << ";" << result.x(1) << ";" << result.y(0) << ";" << solution::f_calls << "\n";
+
+	solution::clear_calls();
+
+	//
+	// Simulation
+	//
+
+	matrix y;
+	matrix Y0(4, 1);
+	matrix* Y = solve_ode(df6, 0, 0.1, 100, Y0, NAN, result.x[0]);
+	cout << Y[1];
+}

@@ -1073,13 +1073,111 @@ solution EA(matrix(*ff)(matrix, matrix, matrix), int N, matrix lb, matrix ub, in
 {
 	try
 	{
-		solution Xopt;
-		// Tu wpisz kod funkcji
+		solution* P = new solution[mi + lambda];
+		solution* Pm = new solution[mi];
 
-		return Xopt;
+		matrix IFF(mi, 1), temp(N, 2);
+
+		double r, s, s_IFF;
+		double tau = 1.0 / sqrt(2 * N), tau1 = 1.0 / sqrt(2 * sqrt(N));
+
+		int j_min;
+
+		for (int i = 0; i < mi; ++i)
+		{
+			P[i].x = matrix(N, 2);
+
+			P[i].x(0, 0) = (lb(1) - lb(0)) * m2d(rand_mat()) + lb(0);
+			P[i].x(0, 1) = sigma0(0);
+
+			P[i].x(1, 0) = (ub(1) - ub(0)) * m2d(rand_mat()) + ub(0);
+			P[i].x(1, 1) = sigma0(0);
+
+			P[i].fit_fun(ff, ud1, ud2);
+
+			if (P[i].y < epsilon)
+			{
+				P[i].flag = 1;
+				return P[i];
+			}
+		}
+		while (true)
+		{
+			s_IFF = 0;
+
+			for (int i = 0; i < mi; ++i)
+			{
+				IFF(i) = 1 / P[i].y(0);
+				s_IFF += IFF(i);
+			}
+
+			for (int i = 0; i < lambda; ++i)
+			{
+				r = s_IFF * m2d(rand_mat()); ;
+				s = 0;
+				for (int j = 0; j < mi; ++j)
+				{
+					s += IFF(j);
+					if (r <= s)
+					{
+						P[mi + i] = P[j];
+						break;
+					}
+				}
+			}
+
+			for (int i = 0; i < lambda; ++i)
+			{
+				r = m2d(randn_mat());
+				for (int j = 0; j < N; ++j)
+				{
+					P[mi + i].x(j, 1) *= exp(tau1 * r + tau * m2d(randn_mat()));
+					P[mi + i].x(j, 0) += P[mi + i].x(j, 1) * m2d(randn_mat());
+				}
+			}
+
+			for (int i = 0; i < lambda; i += 2)
+			{
+				r = m2d(rand_mat());
+				temp = P[mi + i].x;
+				P[mi + i].x = r * P[mi + i].x + (1 - r) * P[mi + i + 1].x;
+				P[mi + i + 1].x = r * P[mi + i + 1].x + (1 - r) * temp;
+			}
+
+			for (int i = 0; i < lambda; ++i)
+			{
+				P[mi + i].fit_fun(ff, ud1, ud2);
+				if (P[mi + i].y < epsilon)
+				{
+
+					P[mi + i].flag = 1;
+					return P[mi + i];
+				}
+			}
+
+			for (int i = 0; i < mi; ++i)
+			{
+				j_min = 0;
+				for (int j = 1; j < mi + lambda; ++j)
+					if (P[j_min].y > P[j].y)
+						j_min = j;
+				Pm[i] = P[j_min];
+				P[j_min].y = 1e10;
+			}
+
+			for (int i = 0; i < mi; ++i)
+				P[i] = Pm[i];
+
+			if (solution::f_calls > Nmax)
+				break;
+		}
+
+		P[0].flag = 0;
+
+		return P[0];
 	}
 	catch (string ex_info)
 	{
-		throw("solution EA(...):\n" + ex_info);
+		throw ("solution EA(...):\n" + ex_info);
 	}
 }
